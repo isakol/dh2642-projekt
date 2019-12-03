@@ -1,21 +1,46 @@
 import React, {Component} from "react";
 import QuestionsCard from "./QuestionsCard";
+import QuizBreakdown from "./QuizBreakdown";
 import "./Quiz.css";
 
-let questions = `{"response_code":0,"results":[{"category":"Science: Mathematics","type":"boolean","difficulty":"medium","question":"The proof for the Chinese Remainder Theorem used in Number Theory was NOT developed by its first publisher, Sun Tzu.","correct_answer":"True","incorrect_answers":["False"]},{"category":"Entertainment: Video Games","type":"multiple","difficulty":"medium","question":"In Call of Duty: United Offensive, what two soldiers share a name of a video game character?","correct_answer":"Gordon &amp; Freeman","incorrect_answers":["Sam &amp; Fisher","Nathan &amp; Drake","Dig &amp; Dug"]},{"category":"Entertainment: Musicals & Theatres","type":"multiple","difficulty":"medium","question":"What was George Bizet&#039;s last opera?","correct_answer":"Carmen","incorrect_answers":["Don Rodrigue","Gris&eacute;lidis","Les p&ecirc;cheurs de perles"]},{"category":"History","type":"multiple","difficulty":"medium","question":"What is the bloodiest event in United States history, in terms of casualties?","correct_answer":"Battle of Antietam","incorrect_answers":["Pearl Harbor","September 11th","D-Day"]},{"category":"Vehicles","type":"boolean","difficulty":"medium","question":"Arriva is owned by the Deutsche Bahn.","correct_answer":"True","incorrect_answers":["False"]},{"category":"Entertainment: Video Games","type":"multiple","difficulty":"medium","question":"In the first Left 4 Dead, you can play as either of these four characters.","correct_answer":"Francis, Bill, Zoey, and Louis","incorrect_answers":["Bender, Andrew, Allison, and Brian","Coach, Ellis, Nick, and Rochelle","Harry, Ron, Hermione and Dumbledore"]},{"category":"Science & Nature","type":"multiple","difficulty":"hard","question":"What genetic disease is caused by having an extra Y chromosome (XYY)?","correct_answer":"Jacob&#039;s Syndrome","incorrect_answers":["Klinefelter&#039;s Syndrome","Turner&#039;s Syndrome","Down Syndrome"]},{"category":"Science: Gadgets","type":"multiple","difficulty":"easy","question":"When was the iPhone released?","correct_answer":"2007","incorrect_answers":["2005","2006","2004"]},{"category":"Entertainment: Music","type":"multiple","difficulty":"medium","question":"Which album by American rapper Kanye West contained songs such as &quot;Love Lockdown&quot;, &quot;Paranoid&quot; and &quot;Heartless&quot;?","correct_answer":"808s &amp; Heartbreak","incorrect_answers":["Late Registration","The Life of Pablo","Graduation"]},{"category":"Entertainment: Video Games","type":"multiple","difficulty":"hard","question":"In the indie farming game &quot;Stardew Valley&quot;, which NPC hates the &quot;prismatic shard&quot; item when received as a gift?","correct_answer":"Haley","incorrect_answers":["Abigail ","Elliott","Lewis"]}]}`
+let questions = `{"response_code":0,"results":[{"category":"Geography","type":"multiple","difficulty":"medium","question":"Montreal is in which Canadian province?","correct_answer":"Quebec","incorrect_answers":["Ontario","Nova Scotia","Alberta"]},{"category":"Entertainment: Film","type":"multiple","difficulty":"medium","question":"What is the name of the first &quot;Star Wars&quot; film by release order?","correct_answer":"A New Hope","incorrect_answers":["The Phantom Menace","The Force Awakens","Revenge of the Sith"]},{"category":"Geography","type":"multiple","difficulty":"medium","question":"Which German city is located on the River Isar?","correct_answer":"Munich","incorrect_answers":["Berlin","Hamburg","Dortmund"]},{"category":"Entertainment: Music","type":"multiple","difficulty":"medium","question":"Johnny Cash did a cover of this song written by lead singer of Nine Inch Nails, Trent Reznor.","correct_answer":"Hurt","incorrect_answers":["Closer","A Warm Place","Big Man with a Gun"]},{"category":"Entertainment: Television","type":"multiple","difficulty":"medium","question":"Who co-founded the YouTube Let&#039;s Play channel &quot;Game Grumps&quot; alongside Newgrounds animator Egoraptor?","correct_answer":"JonTron","incorrect_answers":["Pewdiepie","Tobuscus","Markiplier"]},{"category":"History","type":"multiple","difficulty":"medium","question":"What was the transfer of disease, crops, and people across the Atlantic shortly after the discovery of the Americas called?","correct_answer":"The Columbian Exchange","incorrect_answers":["Triangle Trade","Transatlantic Slave Trade","The Silk Road"]},{"category":"Entertainment: Film","type":"multiple","difficulty":"medium","question":"This trope refers to minor characters that are killed off to show how a monster works.","correct_answer":"Red Shirt","incorrect_answers":["Minions","Expendables","Cannon Fodder"]},{"category":"Geography","type":"multiple","difficulty":"medium","question":"What is the busiest port in Europe?","correct_answer":"Port of Rotterdam","incorrect_answers":["Port of Antwerp","Port of Hamburg","Port of Amsterdam"]},{"category":"History","type":"multiple","difficulty":"medium","question":"Which of the following snipers has the highest amount of confirmed kills?","correct_answer":"Simo H&auml;yh&auml;","incorrect_answers":["Chris Kyle","Vasily Zaytsev","Craig Harrison"]},{"category":"Entertainment: Japanese Anime & Manga","type":"multiple","difficulty":"medium","question":"What year did &quot;Attack on Titan&quot; Season 2 begin airing?","correct_answer":"2017","incorrect_answers":["2018","2019","2020"]}]}`
 questions = JSON.parse(questions);
 
-let question='{"category":"Science: Gadgets","type":"multiple","difficulty":"easy","question":"When was the iPhone released?","correct_answer":"2007","incorrect_answers":["2005","2006","2004"]}';
+function shuffle(arr) {
+    var counter = arr.length, temp, index;
+    while (counter > 0) {
+        index = Math.floor(Math.random() * counter);
+        counter--;
+        temp = arr[counter];
+        arr[counter] = arr[index];
+        arr[index] = temp;
+    }
+    return arr;
+}
+
+
 
 class QuizContainer extends Component {
   constructor(props) {
     super(props);
     this.total_questions = questions.results.length;
+    this.alternatives = [];
+    this.answers = [];
+
+    questions.results.map((q,i) => {
+      let tempalternatives = q.incorrect_answers;
+      tempalternatives.push(q.correct_answer);
+      tempalternatives = shuffle(tempalternatives);
+      this.alternatives[i] = tempalternatives;
+    })
+
     this.state = {
       currentQuestion: 1,
       points: 0,
+      correctOrIncorrect: null,
       timeLeft: 10000, //10 seconds
-      stopped: false
+      stopped: false,
+      quizFinished: false
     }
   }
   componentDidMount() {
@@ -29,24 +54,54 @@ class QuizContainer extends Component {
       }
     }, 100);
   }
+
   answerClick = (ans) => {
     this.stop(ans);
   }
 
   stop(answer) {
-    this.setState({stopped: true});
     if (!this.state.stopped) {
+      this.setState({stopped: true});
       if (answer == questions.results[this.state.currentQuestion-1].correct_answer) {
-        this.setState({points: this.state.points+100-(10-this.state.currentTimeLeft/1000*5)});
-        alert("correct");
+        let pointsGained = Math.round((100-(50-this.state.timeLeft/1000*5)));
+        this.answers.push({question: questions.results[this.state.currentQuestion-1].question, answer: answer, correct:true, pointsGained:pointsGained});
+        this.setState({points: this.state.points+pointsGained, correctOrIncorrect:{status: "correct", pointsGained: pointsGained}});
       } else {
-        alert("incorrect");
+        this.answers.push({question: questions.results[this.state.currentQuestion-1].question, answer: answer, correct:false, correct_answer: questions.results[this.state.currentQuestion-1].correct_answer});
+        this.setState({correctOrIncorrect: {status: "incorrect", correct_answer: questions.results[this.state.currentQuestion-1].correct_answer}})
+      }
+      if (this.state.currentQuestion < 10) {
+        setTimeout(() => {
+          this.setState({
+            currentQuestion: this.state.currentQuestion+1,
+            timeLeft: 10000,
+            stopped:false,
+            correctOrIncorrect:null
+          })
+        }, 2000);
+      } else {
+        this.setState({
+          stopped:true,
+          quizFinished:true
+        })
       }
     }
   }
 
+
   render() {
-    return <QuestionsCard question={questions.results[this.state.currentQuestion-1]} timeLeft={this.state.timeLeft} answerClick={this.answerClick} />
+    if (!this.state.quizFinished) {
+    return <QuestionsCard
+              alternatives={this.alternatives[this.state.currentQuestion-1]}
+              questionNumber={this.state.currentQuestion}
+              questionText={questions.results[this.state.currentQuestion-1].question}
+              timeLeft={this.state.timeLeft} answerClick={this.answerClick}
+              correctOrIncorrect={this.state.correctOrIncorrect}
+            />
+    } else {
+      return <QuizBreakdown answers={this.answers}/>
+    }
+
   }
 }
 

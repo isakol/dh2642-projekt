@@ -54,3 +54,58 @@
   text-align:center;
   font-size:16px;
 }
+
+.question-incorrect {
+  color:#f5222d;
+}
+.question-correct {
+  color:#52c41a;
+}
+.correct-answer {
+  color:#1890ff;
+}
+
+.breakdown-number {
+  height: 48px;
+  width: 48px;
+  border-radius: 24px;
+  border: 5px solid #DADADA;
+  text-align: center;
+  padding-top: 0px;
+  font-size: 24px;
+  color: #666;
+  margin-right: 24px;
+  margin-top: 6px;
+}
+
+.breakdown {
+  display:flex;
+  flex-direction: row;
+  font-size:16px;
+  padding:24px;
+  border-bottom: 1px solid #e8e8e8;
+  margin-left:-24px;
+  margin-right:-24px;
+}
+
+.breakdown-title {
+  font-size:24px;
+  font-weight:600;
+}
+
+.breakdown-main {
+  flex:1;
+}
+
+.breakdown-points {
+  width: 84px;
+  font-size: 32px;
+  text-align: right;
+  font-weight: 600;
+  line-height: 60px;
+  color:#52c41a;
+}
+
+.breakdown-card {
+  margin-top:-24px;
+}
