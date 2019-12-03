@@ -24,6 +24,14 @@
   color:#001529;
   font-size:24px;
   font-weight:bold;
+  margin-right:20px;
+}
+
+.logo a {
+  color:#001529;
+}
+.header-start {
+  margin-top:-5px;
 }
 
 .username {
@@ -31,4 +39,9 @@
   margin-left:1rem;
   font-size:16px;
   color:#666666;
+}
+
+.start-button {
+  margin-right: 20px;
+  margin-top:-5px;
 }
