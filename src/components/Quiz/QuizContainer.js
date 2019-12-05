@@ -54,6 +54,9 @@ class QuizContainer extends Component {
       }
     }, 100);
   }
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
 
   answerClick = (ans) => {
     this.stop(ans);
