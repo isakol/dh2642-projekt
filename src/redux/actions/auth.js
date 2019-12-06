@@ -1,6 +1,7 @@
 import * as firebase from "firebase/app";
 import "firebase/auth";
 import {startLoading, finishLoading} from "./loading";
+import {withRouter} from 'react-router-dom';
 
 import {
   SIGNUP_SUCCESS,
@@ -47,11 +48,12 @@ export const signin = (email, password) => async dispatch => {
   });
 };
 
-export const signout = () => async dispatch => {
+export const signout = (history) => async dispatch => {
   dispatch(startLoading());
   firebase.auth().signOut()
   .then(() => {
     dispatch({ type: SIGNOUT_SUCCESS });
+    history.push("/");
   })
   .catch((err) => {
     dispatch({type: SIGNOUT_ERROR, message: err.message});

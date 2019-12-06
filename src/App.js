@@ -1,41 +1,26 @@
 import React, { Component } from 'react';
 import './App.css';
-import { Layout, Col, Row, Badge, Avatar, Button } from 'antd'
+import { Layout, Col, Row, Badge, Avatar, Button, Dropdown, Menu, Icon } from 'antd'
 import { Link, BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { connect } from "react-redux";
-import QuizContainer from "./components/Quiz/QuizContainer";
-import Login from "./components/Login/Login"
-import {signout} from "./redux/actions/auth"
+import Quiz from "./components/Quiz";
+import Login from "./components/Login";
+import Leaderboards from "./components/Leaderboards";
+import RequireAuth from "./RequireAuth";
+import Header from "./components/Layout/Header"
 
-const { Header, Footer, Sider, Content } = Layout;
+const { Footer, Sider, Content } = Layout;
 
-const App = ({ auth, signoutClick}) => {
+const App = () => {
   return (
         <Router>
           <Layout>
-            <Header>
-              <Row type="flex" justify="space-between">
-                <Col className="header-start">
-                  <span className="logo"><Link to="/">InQuizitor</Link></span>
-                  <span className="start-button">
-                    <Link to="/new-quiz">
-                      <Button type="primary" shape="round" size="large">Start quiz</Button>
-                    </Link>
-                  </span>
-                  <span><Link to="/leaderboards">Leaderboards</Link></span>
-                </Col>
-                <Col>
-                  <Badge count={1}>
-                    <Avatar shape="circle" icon="user" size="large" />
-                  </Badge>
-                </Col>
-              </Row>
-            </Header>
+            <Header/>
             <Content>
               <Switch>
-                <Route exact path="/">
-                  {!auth.isLoaded ? "Loading..." : !auth.isEmpty ? <QuizContainer /> : <Login />}
-                </Route>
+                <Route exact path="/"><RequireAuth><Quiz/></RequireAuth></Route>
+                <Route path="/leaderboards" component={Leaderboards} />
+                {/*<Route exact={true}>Error 404. Page could not be found.</Route>*/}
               </Switch>
             </Content>
             <Footer style={{textAlign: 'center'}}>
@@ -53,10 +38,4 @@ function mapStateToProps(state) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-    signoutClick: () => dispatch(signout())
-  }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps)(App);

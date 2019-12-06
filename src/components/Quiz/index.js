@@ -20,7 +20,7 @@ function shuffle(arr) {
 
 
 
-class QuizContainer extends Component {
+class Quiz extends Component {
   constructor(props) {
     super(props);
     this.total_questions = questions.results.length;
@@ -108,4 +108,4 @@ class QuizContainer extends Component {
   }
 }
 
-export default QuizContainer;
+export default Quiz;
