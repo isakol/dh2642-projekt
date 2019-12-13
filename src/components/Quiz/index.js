@@ -1,98 +1,184 @@
 import React, {Component} from "react";
 import QuestionsCard from "./QuestionsCard";
 import QuizBreakdown from "./QuizBreakdown";
+import QuizStart from "./QuizStart";
+import {message, Spin} from "antd";
 import "./Quiz.css";
+import {connect} from "react-redux";
+import {get_categories} from "../../redux/actions/categories";
 
-let questions = `{"response_code":0,"results":[{"category":"Geography","type":"multiple","difficulty":"medium","question":"Montreal is in which Canadian province?","correct_answer":"Quebec","incorrect_answers":["Ontario","Nova Scotia","Alberta"]},{"category":"Entertainment: Film","type":"multiple","difficulty":"medium","question":"What is the name of the first &quot;Star Wars&quot; film by release order?","correct_answer":"A New Hope","incorrect_answers":["The Phantom Menace","The Force Awakens","Revenge of the Sith"]},{"category":"Geography","type":"multiple","difficulty":"medium","question":"Which German city is located on the River Isar?","correct_answer":"Munich","incorrect_answers":["Berlin","Hamburg","Dortmund"]},{"category":"Entertainment: Music","type":"multiple","difficulty":"medium","question":"Johnny Cash did a cover of this song written by lead singer of Nine Inch Nails, Trent Reznor.","correct_answer":"Hurt","incorrect_answers":["Closer","A Warm Place","Big Man with a Gun"]},{"category":"Entertainment: Television","type":"multiple","difficulty":"medium","question":"Who co-founded the YouTube Let&#039;s Play channel &quot;Game Grumps&quot; alongside Newgrounds animator Egoraptor?","correct_answer":"JonTron","incorrect_answers":["Pewdiepie","Tobuscus","Markiplier"]},{"category":"History","type":"multiple","difficulty":"medium","question":"What was the transfer of disease, crops, and people across the Atlantic shortly after the discovery of the Americas called?","correct_answer":"The Columbian Exchange","incorrect_answers":["Triangle Trade","Transatlantic Slave Trade","The Silk Road"]},{"category":"Entertainment: Film","type":"multiple","difficulty":"medium","question":"This trope refers to minor characters that are killed off to show how a monster works.","correct_answer":"Red Shirt","incorrect_answers":["Minions","Expendables","Cannon Fodder"]},{"category":"Geography","type":"multiple","difficulty":"medium","question":"What is the busiest port in Europe?","correct_answer":"Port of Rotterdam","incorrect_answers":["Port of Antwerp","Port of Hamburg","Port of Amsterdam"]},{"category":"History","type":"multiple","difficulty":"medium","question":"Which of the following snipers has the highest amount of confirmed kills?","correct_answer":"Simo H&auml;yh&auml;","incorrect_answers":["Chris Kyle","Vasily Zaytsev","Craig Harrison"]},{"category":"Entertainment: Japanese Anime & Manga","type":"multiple","difficulty":"medium","question":"What year did &quot;Attack on Titan&quot; Season 2 begin airing?","correct_answer":"2017","incorrect_answers":["2018","2019","2020"]}]}`
-questions = JSON.parse(questions);
 
-function shuffle(arr) {
-    var counter = arr.length, temp, index;
-    while (counter > 0) {
-        index = Math.floor(Math.random() * counter);
-        counter--;
-        temp = arr[counter];
-        arr[counter] = arr[index];
-        arr[index] = temp;
-    }
-    return arr;
-}
+const error = (message) => {
+  message.error('');
+};
 
 
 
 class Quiz extends Component {
+
   constructor(props) {
     super(props);
-    this.total_questions = questions.results.length;
-    this.alternatives = [];
-    this.answers = [];
 
-    questions.results.map((q,i) => {
-      let tempalternatives = q.incorrect_answers;
-      tempalternatives.push(q.correct_answer);
-      tempalternatives = shuffle(tempalternatives);
-      this.alternatives[i] = tempalternatives;
-    })
+
 
     this.state = {
-      currentQuestion: 1,
-      points: 0,
-      correctOrIncorrect: null,
-      timeLeft: 10000, //10 seconds
-      stopped: false,
-      quizFinished: false
+      started:false,
+      paused:false,
+      finished:false,
+      timeLeft: 10000,
+      message: "",
+      questions: [],
+      status: "loading",
+      questionNo: 0,
+      answers: [],
+      correctOrIncorrect: null
+    }
+    this.startClick = this.startClick.bind(this);
+    this.answer = this.answer.bind(this);
+  }
+
+  startClick() {
+    if (this.state.status == "success") {
+      this.setState({started: true});
+      this.interval = setInterval(() => {
+        if (!this.state.paused) {
+          let currentTimeLeft = this.state.timeLeft-200;
+          this.setState({timeLeft: currentTimeLeft});
+          if (currentTimeLeft <= 0) {
+            this.answer("");
+          }
+        }
+      }, 200);
     }
   }
-  componentDidMount() {
-    this.interval = setInterval(() => {
-      if (!this.state.stopped) {
-        let currentTimeLeft = this.state.timeLeft-100
-        this.setState({timeLeft: currentTimeLeft});
-        if (currentTimeLeft <= 0) {
-          this.stop("");
+  answer(answer) {
+    if (!this.state.paused) {
+    this.setState(
+      {
+        paused: true,
+        answers: this.state.answers.concat({
+          question: this.state.questions[this.state.questionNo].question,
+          answer: answer,
+          correct_answer: this.state.questions[this.state.questionNo].correct_answer,
+          pointsGained: 50
+        }),
+        correctOrIncorrect:
+        {
+          correct: (this.state.questions[this.state.questionNo].correct_answer == answer),
+          correct_answer: (this.state.questions[this.state.questionNo].correct_answer),
+          pointsGained: 50
         }
       }
-    }, 100);
+    );
+      if (this.state.questionNo >= 9) {
+        clearInterval(this.interval);
+        setTimeout(() => {
+          this.setState({finished:true});
+        }, 2000);
+      } else {
+      setTimeout(() => {
+        this.setState({
+          paused: false,
+          timeLeft:10000,
+          questionNo:this.state.questionNo+1,
+          correctOrIncorrect: null
+        })
+      }, 2000);
+    }
+  }
+  }
+  componentDidMount() {
+
+
+    const noOfQuestions = 10;
+    let reqString = "https://opentdb.com/api.php?amount=";
+    reqString += noOfQuestions + "&category=";
+    reqString += this.props.match.params.id + "&difficulty=";
+    reqString += this.props.match.params.difficulty + "&type=multiple";
+    this.setState({status: "loading"})
+    fetch(reqString, {method:"GET"})
+    .then(response => {
+      if (response.ok) {
+        response.json().then(questions => {
+          questions.results.map(q => {
+            q.alternatives = q.incorrect_answers;
+            q.alternatives.push(q.correct_answer);
+            //shuffle the alternatives
+            q.alternatives =
+            q.alternatives
+              .map((a) => ({sort: Math.random(), value: a}))
+              .sort((a, b) => a.sort - b.sort)
+              .map((a) => a.value);
+            delete q.incorrect_answers;
+          });
+          this.setState({status: "success", questions: questions.results});
+        });
+      } else {
+        this.setState({status: "error", message: "Could not load the quiz. Please try again later."})
+      }
+    })
+    .catch(() => {
+        this.setState({status: "error", message: "Could not load the quiz. Please try again later."})
+    });
+
+    if (this.props.cats.length == 0) {
+      this.props.get_categories();
+    }
   }
   componentWillUnmount() {
     clearInterval(this.interval);
   }
 
-  answerClick = (ans) => {
-    this.stop(ans);
-  }
-
-  stop(answer) {
-    if (!this.state.stopped) {
-      this.setState({stopped: true});
-      if (answer == questions.results[this.state.currentQuestion-1].correct_answer) {
-        let pointsGained = Math.round((100-(50-this.state.timeLeft/1000*5)));
-        this.answers.push({question: questions.results[this.state.currentQuestion-1].question, answer: answer, correct:true, pointsGained:pointsGained});
-        this.setState({points: this.state.points+pointsGained, correctOrIncorrect:{status: "correct", pointsGained: pointsGained}});
-      } else {
-        this.answers.push({question: questions.results[this.state.currentQuestion-1].question, answer: answer, correct:false, correct_answer: questions.results[this.state.currentQuestion-1].correct_answer});
-        this.setState({correctOrIncorrect: {status: "incorrect", correct_answer: questions.results[this.state.currentQuestion-1].correct_answer}})
-      }
-      if (this.state.currentQuestion < 10) {
-        setTimeout(() => {
-          this.setState({
-            currentQuestion: this.state.currentQuestion+1,
-            timeLeft: 10000,
-            stopped:false,
-            correctOrIncorrect:null
-          })
-        }, 2000);
-      } else {
-        this.setState({
-          stopped:true,
-          quizFinished:true
-        })
-      }
-    }
-  }
 
 
   render() {
+
+
+    let content = "";
+    if (this.props.categoriesStatus == "loading") {
+      content = <div className="difficulty-status"><Spin size="large" /></div>
+    } else if (this.props.categoriesStatus == "success") {
+      let findCategory = this.props.cats.find(cat => cat.id == this.props.match.params.id);
+
+      if (typeof findCategory === "undefined") {
+        content = <div className="quiz-status">The requested category does not exist.</div>
+      } else {
+        if (this.state.started) {
+          if (this.state.finished) {
+            content =
+            <QuizBreakdown answers={this.state.answers}/>
+          } else {
+            content =
+            <QuestionsCard
+              questionNo={this.state.questionNo}
+              questionText={this.state.questions[this.state.questionNo].question}
+              alternatives={this.state.questions[this.state.questionNo].alternatives}
+              timeLeft={this.state.timeLeft}
+              answerClick={this.answer}
+              correctOrIncorrect={this.state.correctOrIncorrect}
+            />
+          }
+        } else {
+          content =
+          <QuizStart
+            status={this.state.status}
+            difficulty={this.props.match.params.difficulty}
+            name={findCategory.name}
+            message={this.state.message}
+            startClick={this.startClick}
+          />
+        }
+      }
+
+    } else {
+      content = <div className="quiz-status">{this.props.message}</div>
+    }
+      return (<React.Fragment>{content}</React.Fragment>);
+    //return (<QuizStart difficulty={this.props.match.params.difficulty} />);
+    //return (<QuestionsCard/>);
+
+
+    /*
     if (!this.state.quizFinished) {
     return <QuestionsCard
               alternatives={this.alternatives[this.state.currentQuestion-1]}
@@ -105,7 +191,22 @@ class Quiz extends Component {
       return <QuizBreakdown answers={this.answers}/>
     }
 
+    */
+
   }
 }
 
-export default Quiz;
+function mapStateToProps(state) {
+  return {
+    cats: state.categoryReducer.categories,
+    categoriesStatus: state.categoryReducer.status,
+  }
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    get_categories: () => dispatch(get_categories())
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Quiz);

@@ -1,5 +1,5 @@
 const initialState = {
-    quizResults: { 
+    quizResults: {
         category: "",
         difficulty: "",
         questions: []
@@ -39,8 +39,8 @@ const quizResultsReducer = function(state = initialState, action) {
             }
             break;
     }
-  
+
     return state;
   }
-  
-  export default quizResultsReducer;
+
+  export default quizResultsReducer; 

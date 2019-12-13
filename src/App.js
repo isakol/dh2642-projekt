@@ -7,7 +7,9 @@ import Quiz from "./components/Quiz";
 import Login from "./components/Login";
 import Leaderboards from "./components/Leaderboards";
 import RequireAuth from "./RequireAuth";
-import Header from "./components/Layout/Header"
+import Header from "./components/Layout/Header";
+import SelectCategory from "./components/NewQuiz/SelectCategory";
+import SelectDifficulty from "./components/NewQuiz/SelectDifficulty";
 
 const { Footer, Sider, Content } = Layout;
 
@@ -18,8 +20,11 @@ const App = () => {
             <Header/>
             <Content>
               <Switch>
-                <Route exact path="/"><RequireAuth><Quiz/></RequireAuth></Route>
+                <Route exact path="/"><div>Welcome home</div></Route>
                 <Route path="/leaderboards" component={Leaderboards} />
+                <Route exact path="/new-quiz/:id" render={(props) => <RequireAuth><SelectDifficulty match={props.match} /></RequireAuth>} />
+                <Route exact path="/new-quiz"><RequireAuth><SelectCategory /></RequireAuth></Route>
+                <Route exact path="/quiz/:id/:difficulty(|easy|medium|hard)?" render={(props) => <RequireAuth><Quiz match={props.match}/></RequireAuth>} />
                 {/*<Route exact={true}>Error 404. Page could not be found.</Route>*/}
               </Switch>
             </Content>

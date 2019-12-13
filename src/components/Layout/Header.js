@@ -25,9 +25,9 @@ const LayoutHeader = (props) => {
           {!props.auth.isLoaded ? "" :
             !props.auth.isEmpty ?
               <Dropdown trigger={['click']} overlay={
-                <Menu>
+                <Menu className="dropdown-menu">
                   <Menu.Item key="1"><Icon type="user" /> My profile</Menu.Item>
-                  <Menu.Item key="2"><Icon type="setting" /> Settings</Menu.Item>
+                  <Menu.Item key="2"><Link to="/settings"><Icon type="setting" />Settings</Link></Menu.Item>
                   <Menu.Item onClick={props.signoutClick} className="logout-button" key="3">
                     <Icon type="logout" /> Sign out
                   </Menu.Item>

@@ -1,0 +1,46 @@
+.difficulty-name {
+  margin-bottom:5px;
+}
+
+.difficulty-card {
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.20);
+  border:none;
+  border-radius:10px;
+  text-align:center;
+}
+.difficulty-button {
+  height:48px;
+  margin-bottom:20px;
+  font-size:16px;
+  font-weight:600;
+}
+
+.difficulty-button:hover {
+  border:2px solid rgba(0,0,0,0.5);
+  color:#111;
+}
+
+.difficuly-button:active, .difficulty-button:focus {
+  border:1px solid rgba(0,0,0,0.5);
+  color:#111;
+}
+
+.difficulty-button.easy {
+  background-color:#a0d911;
+}
+
+.difficulty-button.medium {
+  background-color:#fadb14;
+}
+
+.difficulty-button.hard {
+  background-color:#fa8c16;
+}
+
+.difficulty-back-link {
+  margin-bottom:20px;
+}
+
+.difficulty-status {
+  text-align:center;
+}

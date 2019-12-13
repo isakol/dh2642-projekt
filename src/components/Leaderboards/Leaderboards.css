@@ -1,0 +1,18 @@
+.a-player {
+  border-bottom: 1px solid #e8e8e8;
+  display:flex;
+  flex-direction:row;
+  justify-content: space-between;
+  padding: 15px 0;
+  font-size:16px;
+}
+
+.a-player .player-name {
+  flex:1;
+  font-size:16px;
+}
+
+.a-player .player-no {
+  width:26px;
+  font-size:16px;
+}

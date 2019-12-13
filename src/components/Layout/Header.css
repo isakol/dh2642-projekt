@@ -7,3 +7,9 @@
 .logout-button {
   color: #f5222d
 }
+
+.dropdown-menu a i {
+  min-width: 12px;
+  margin-right: 12px;
+  font-size: 12px;
+}

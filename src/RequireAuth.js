@@ -3,7 +3,7 @@ import Login from "./components/Login";
 import { connect } from "react-redux";
 
 const RequireAuth = (props) => {
-  return !props.auth.isLoaded ? "Loading..." : !props.auth.isEmpty ? props.children : <Login />;
+  return !props.auth.isLoaded ? "" : !props.auth.isEmpty ? props.children : <Login />;
 }
 
 

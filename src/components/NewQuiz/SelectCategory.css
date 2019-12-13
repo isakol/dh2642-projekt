@@ -1,0 +1,15 @@
+.category-button {
+    margin-bottom:20px;
+    height:80px;
+    white-space: prewrap;
+}
+
+.category-title {
+  font-size:28px;
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.category-status {
+  text-align:center;
+}

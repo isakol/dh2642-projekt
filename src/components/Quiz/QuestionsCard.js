@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import { Card, Row, Col, Button, Progress } from "antd";
+import {Card, Row, Col, Button, Progress } from "antd";
 
 
 class QuestionCard extends Component {
@@ -7,13 +7,14 @@ class QuestionCard extends Component {
     super(props);
   }
   render() {
+
     return (
-      <Card className="quiz-card" title={"Question "+this.props.questionNumber+"/10"}>
+      <Card className="quiz-card" title={"Question "+(this.props.questionNo+1)+"/10"}>
         <div className="question-body">
           <div className="the-question">
           {
-            this.props.correctOrIncorrect !== null ?
-              this.props.correctOrIncorrect.status == "correct" ?
+            this.props.correctOrIncorrect != null ?
+              this.props.correctOrIncorrect.correct ?
                   <div>
                     <div className="question-correct">Correct</div>
                     <div className="points-gained">+{this.props.correctOrIncorrect.pointsGained} Points</div>
@@ -25,13 +26,14 @@ class QuestionCard extends Component {
                   </div>
             :
               this.props.questionText
-          }
+            }
           </div>
           <div>
           <div className="question-seconds">{Math.ceil(this.props.timeLeft/1000)} seconds left</div>
           <Progress className="question-progress" percent={100-((this.props.timeLeft)/10000*100)} showInfo={false} status="active" strokeWidth={24} />
           </div>
         </div>
+
         <div className="quiz-card-footer">
           <Row className="quiz-answers-first">
             {
