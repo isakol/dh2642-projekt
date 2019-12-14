@@ -7,6 +7,7 @@ const initialState = {
         {name:"Science: Mathematics",times:0},{name:"Mythology",times:0},{name:"Sports",times:0},{name:"Geography",times:0},{name:"History", times:0},
         {name:"Politics", times:0},{name:"Art",times:0},{name:"Celebrities",times:0},{name:"Animals",times:0},{name:"Vehicles",times:0},{name:"Entertainment: Comics",times:0},
         {name:"Science: Gadgets",times:0},{name:"Entertainment: Japanese Anime & Manga",times:0},{name:"Entertainment: Cartoon & Animations",times:0}],
+        takenQuizzes: [],
         clearRate: 0.0
     }
   };
@@ -30,6 +31,16 @@ const userDataReducer = function(state = initialState, action) {
                 userData: {
                   ...state.userData,
                   categoryPreferences: newCatPref
+                }
+            }
+            break;
+      case "UPDATE_TAKEN_QUIZZES":
+            let newTakenQuizzes = action.takenQuizzes;
+            return {
+                ...state,
+                userData: {
+                  ...state.userData,
+                  categoryPreferences: newTakenQuizzes
                 }
             }
             break;

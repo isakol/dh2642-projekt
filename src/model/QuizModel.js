@@ -17,7 +17,7 @@ class QuizModel{
 
     sortFavoriteCategories(){
         let newState = this.store.getState().userDataReducer.categoryPreferences;
-        let results = this.store.getState().resultsReducer.results;
+        let results = this.store.getState().quizResultsReducer.results;
         newState.forEach(cat =>{
             if(cat.name === results.category){
                 cat.times++;
@@ -47,7 +47,7 @@ class QuizModel{
         let points = 0;
         let time = 0.0;
         let weighting = 1.0;
-        let results = this.store.getState().resultsReducer.results;
+        let results = this.store.getState().quizResultsReducer.results;
         if(results.category !== user.categoryPreferences[0].name){
             weighting = weighting * calculateCategoryScaling(user, results.category);
         }
@@ -56,7 +56,7 @@ class QuizModel{
         } else if(results.difficulty === "hard"){
             weighting = weighting*1.5;
         }
-        results.forEach(() => {
+        results.questions.forEach(() => {
             if(results.questions.question.question-correct){
                 points = points + 10;
                 time = time + results.questions.question.time-left;
@@ -80,6 +80,36 @@ class QuizModel{
             scaling = 2.0;
         }
         return scaling;
+    }
+
+    calculateTotalClearRate(){
+        let cleared = 0;
+        let total = 0;
+        let quizzes = this.store.getState().userDataReducer.takenQuizzes;
+        quizzes.forEach(() => {
+            let results = quizzes.results;
+            total += Array.length(results.questions);
+            results.questions.forEach(() => {
+                if(results.questions.question.question-correct){
+                    cleared++;
+                }
+            });
+        });
+        let rate = cleared/total;
+        return rate;
+    }
+
+    calculateClearRate(){
+        let cleared = 0;
+        let total = Array.length(this.store.getState().quizResultsReducer.results.questions);
+        let results = this.store.getState().quizResultsReducer.results;
+        results.questions.forEach(() => {
+            if(results.questions.question.question-correct){
+                cleared++;
+            }
+        });
+        let rate = cleared/total;
+        return rate;
     }
 
     fetchQuiz(noOfQuestions, category, difficulty){
