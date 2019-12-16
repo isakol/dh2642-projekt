@@ -1,5 +1,5 @@
 import React from "react";
-import { Layout, Col, Row, Button, Dropdown, Menu, Icon } from 'antd';
+import { Layout, Col, Row, Button, Dropdown, Menu, Icon, Tag} from 'antd';
 import {Link} from "react-router-dom";
 import {connect} from "react-redux";
 import {signout} from "../../redux/actions/auth";
@@ -9,6 +9,7 @@ import "./Header.css"
 const { Header} = Layout;
 
 const LayoutHeader = (props) => {
+  console.log(props);
   return (
     <Header>
       <Row type="flex" justify="space-between">
@@ -24,19 +25,22 @@ const LayoutHeader = (props) => {
         <Col>
           {!props.auth.isLoaded ? "" :
             !props.auth.isEmpty ?
-              <Dropdown trigger={['click']} overlay={
-                <Menu className="dropdown-menu">
-                  <Menu.Item key="1"><Icon type="user" /> My profile</Menu.Item>
-                  <Menu.Item key="2"><Link to="/settings"><Icon type="setting" />Settings</Link></Menu.Item>
-                  <Menu.Item onClick={props.signoutClick} className="logout-button" key="3">
-                    <Icon type="logout" /> Sign out
-                  </Menu.Item>
-                </Menu>
-              }>
-                <div className="header-button-trigger">
-                  <Button size="large"><Icon type="user" /> {props.auth.email} <Icon type="down" /></Button>
-                </div>
-              </Dropdown>
+              <React.Fragment>
+                  {!props.profile.isLoaded ? "" : !props.profile.isEmpty ? <Tag color="#87d068">{props.profile.points} points</Tag> : null}
+                  <Dropdown trigger={['click']} overlay={
+                    <Menu className="dropdown-menu">
+                      <Menu.Item key="1"><Icon type="user" /> My profile</Menu.Item>
+                      <Menu.Item key="2"><Link to="/settings"><Icon type="setting" />Settings</Link></Menu.Item>
+                      <Menu.Item onClick={props.signoutClick} className="logout-button" key="3">
+                        <Icon type="logout" /> Sign out
+                      </Menu.Item>
+                    </Menu>
+                  }>
+                    <span className="header-button-trigger">
+                      <Button size="large"><Icon type="user" /> {props.auth.email} <Icon type="down" /></Button>
+                    </span>
+                  </Dropdown>
+              </React.Fragment>
             : <Link to="/login">
                 <Button size="large" type="primary">Sign in</Button>
               </Link>
@@ -50,7 +54,8 @@ const LayoutHeader = (props) => {
 
 function mapStateToProps(state) {
   return {
-    auth: state.firebaseReducer.auth
+    auth: state.firebaseReducer.auth,
+    profile: state.firebaseReducer.profile
   };
 }
 

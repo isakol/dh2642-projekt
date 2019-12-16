@@ -17,7 +17,6 @@ class QuestionCard extends Component {
               this.props.correctOrIncorrect.correct ?
                   <div>
                     <div className="question-correct">Correct</div>
-                    <div className="points-gained">+{this.props.correctOrIncorrect.pointsGained} Points</div>
                   </div>
                 :
                   <div>

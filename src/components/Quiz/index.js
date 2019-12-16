@@ -6,21 +6,16 @@ import {message, Spin} from "antd";
 import "./Quiz.css";
 import {connect} from "react-redux";
 import {get_categories} from "../../redux/actions/categories";
+import {updateScore} from "../../redux/actions/userData";
 
-
-const error = (message) => {
-  message.error('');
+const error = (msg) => {
+  message.error(msg);
 };
-
-
 
 class Quiz extends Component {
 
   constructor(props) {
     super(props);
-
-
-
     this.state = {
       started:false,
       paused:false,
@@ -60,13 +55,11 @@ class Quiz extends Component {
           question: this.state.questions[this.state.questionNo].question,
           answer: answer,
           correct_answer: this.state.questions[this.state.questionNo].correct_answer,
-          pointsGained: 50
         }),
         correctOrIncorrect:
         {
           correct: (this.state.questions[this.state.questionNo].correct_answer == answer),
           correct_answer: (this.state.questions[this.state.questionNo].correct_answer),
-          pointsGained: 50
         }
       }
     );
@@ -74,6 +67,7 @@ class Quiz extends Component {
         clearInterval(this.interval);
         setTimeout(() => {
           this.setState({finished:true});
+          this.props.updateScore(1000);
         }, 2000);
       } else {
       setTimeout(() => {
@@ -132,8 +126,6 @@ class Quiz extends Component {
 
 
   render() {
-
-
     let content = "";
     if (this.props.categoriesStatus == "loading") {
       content = <div className="difficulty-status"><Spin size="large" /></div>
@@ -146,7 +138,9 @@ class Quiz extends Component {
         if (this.state.started) {
           if (this.state.finished) {
             content =
-            <QuizBreakdown answers={this.state.answers}/>
+            <QuizBreakdown
+              answers={this.state.answers}
+            />
           } else {
             content =
             <QuestionsCard
@@ -171,28 +165,9 @@ class Quiz extends Component {
       }
 
     } else {
-      content = <div className="quiz-status">{this.props.message}</div>
+      content = <div className="quiz-status">{this.props.categoriesMessage}</div>
     }
       return (<React.Fragment>{content}</React.Fragment>);
-    //return (<QuizStart difficulty={this.props.match.params.difficulty} />);
-    //return (<QuestionsCard/>);
-
-
-    /*
-    if (!this.state.quizFinished) {
-    return <QuestionsCard
-              alternatives={this.alternatives[this.state.currentQuestion-1]}
-              questionNumber={this.state.currentQuestion}
-              questionText={questions.results[this.state.currentQuestion-1].question}
-              timeLeft={this.state.timeLeft} answerClick={this.answerClick}
-              correctOrIncorrect={this.state.correctOrIncorrect}
-            />
-    } else {
-      return <QuizBreakdown answers={this.answers}/>
-    }
-
-    */
-
   }
 }
 
@@ -200,12 +175,14 @@ function mapStateToProps(state) {
   return {
     cats: state.categoryReducer.categories,
     categoriesStatus: state.categoryReducer.status,
+    categoriesMessage: state.categoryReducer.message
   }
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    get_categories: () => dispatch(get_categories())
+    get_categories: () => dispatch(get_categories()),
+    updateScore: (score) => dispatch(updateScore(score))
   }
 }
 
