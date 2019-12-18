@@ -15,12 +15,13 @@ class QuizModel{
         this.store = store;
     }
 
-    sortFavoriteCategories(){
+    sortFavoriteCategories(points){
         let newState = this.store.getState().userDataReducer.categoryPreferences;
         let results = this.store.getState().quizResultsReducer.results;
         newState.forEach(cat =>{
-            if(cat.name === results.category){
+            if(cat.id === results.category.id){
                 cat.times++;
+                cat.points += points;
             }
         });
         newState.sort(function(a,b){
@@ -43,12 +44,12 @@ class QuizModel{
 
 
 
-    calculatePoints( user){
+    calculatePoints(results){
         let points = 0;
         let time = 0.0;
         let weighting = 1.0;
-        let results = this.store.getState().quizResultsReducer.results;
-        if(results.category !== user.categoryPreferences[0].name){
+        let user = this.store.getState().userDataReducer;
+        if(results.category.id !== user.categoryPreferences[0].id){
             weighting = weighting * calculateCategoryScaling(user, results.category);
         }
         if(results.difficulty === "medium"){
@@ -56,16 +57,19 @@ class QuizModel{
         } else if(results.difficulty === "hard"){
             weighting = weighting*1.5;
         }
-        results.questions.forEach(() => {
-            if(results.questions.question.question-correct){
+        results.questions.forEach((question) => {
+            if(question.answer == question.correct_answer){
                 points = points + 10;
-                time = time + results.questions.question.time-left;
+                time = time + question.time-left;
             }
         });
         points = Math.round(((points + (time/100))*weighting));
         updateUserScore(points);
         return points;
     }
+    answer: "Government"
+correct_answer: "Government"
+question: "What does the &quot;G&quot; mean in &quot;G-Man&quot;?"
 
     calculateCategoryScaling(user, category){
         let scaling = 1.0;
@@ -86,11 +90,11 @@ class QuizModel{
         let cleared = 0;
         let total = 0;
         let quizzes = this.store.getState().userDataReducer.takenQuizzes;
-        quizzes.forEach(() => {
-            let results = quizzes.results;
-            total += Array.length(results.questions);
-            results.questions.forEach(() => {
-                if(results.questions.question.question-correct){
+        quizzes.forEach((result) => {
+            //let results = quizzes.results;
+            total += Array.length(result.questions);
+            result.questions.forEach((question) => {
+                if(question.answer == question.correct_answer){
                     cleared++;
                 }
             });
@@ -99,12 +103,12 @@ class QuizModel{
         return rate;
     }
 
-    calculateClearRate(){
+    calculateClearRate(results){
         let cleared = 0;
-        let total = Array.length(this.store.getState().quizResultsReducer.results.questions);
-        let results = this.store.getState().quizResultsReducer.results;
-        results.questions.forEach(() => {
-            if(results.questions.question.question-correct){
+        let total = Array.length(results.questions);
+        //let results = this.store.getState().quizResultsReducer.results;
+        results.questions.forEach((question) => {
+            if(question.answer == question.correct_answer){
                 cleared++;
             }
         });

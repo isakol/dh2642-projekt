@@ -1,12 +1,14 @@
 const initialState = {
     userData: {
         score: 0, 
-        categoryPreferences: [{name:"General Knowledge", times: 0},{name:"Entertainment: Books", times: 0},{name:"Entertainment: Film", times: 0},
-        {name:"Entertainment: Music", times:0},{name:"Entertainment: Musicals & Theatres", times:0},{name:"Entertainment: Television",times:0},
-        {name:"Entertainment: Video Games", times: 0},{name:"Entertainment: Board Games", times:0},{name:"Science & Nature", times:0},{name:"Science: Computers", times:0},
-        {name:"Science: Mathematics",times:0},{name:"Mythology",times:0},{name:"Sports",times:0},{name:"Geography",times:0},{name:"History", times:0},
-        {name:"Politics", times:0},{name:"Art",times:0},{name:"Celebrities",times:0},{name:"Animals",times:0},{name:"Vehicles",times:0},{name:"Entertainment: Comics",times:0},
-        {name:"Science: Gadgets",times:0},{name:"Entertainment: Japanese Anime & Manga",times:0},{name:"Entertainment: Cartoon & Animations",times:0}],
+        categoryPreferences: [{id: 9, times: 0, points: 0},{id: 10, times: 0, points: 0},
+        {id: 11, times: 0, points: 0},{id: 12, times:0, points: 0},{id: 13, times:0, points: 0},
+        {id: 14,times:0, points: 0},{id: 15, times: 0, points: 0},{id: 16, times:0, points: 0},
+        {id: 17, times:0, points: 0},{id: 18, times:0, points: 0},{id: 19,times:0, points: 0},
+        {id: 20,times:0, points: 0},{id: 21,times:0, points: 0},{id: 22,times:0, points: 0},
+        {id: 23, times:0, points: 0},{id: 24, times:0, points: 0},{id: 25,times:0, points: 0},
+        {id: 26,times:0, points: 0},{id: 27,times:0, points: 0},{id: 28,times:0, points: 0},{id: 29,times:0, points: 0},
+        {id: 30,times:0, points: 0},{id: 31,times:0, points: 0},{id: 32,times:0, points: 0}],
         takenQuizzes: [],
         clearRate: 0.0
     }
