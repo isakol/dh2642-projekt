@@ -15,9 +15,9 @@ class QuizModel{
         this.store = store;
     }
 
-    sortFavoriteCategories(points){
+    sortFavoriteCategories(results, points){
         let newState = this.store.getState().userDataReducer.categoryPreferences;
-        let results = this.store.getState().quizResultsReducer.results;
+        //let results = this.store.getState().quizResultsReducer.results;
         newState.forEach(cat =>{
             if(cat.id === results.category.id){
                 cat.times++;
@@ -64,7 +64,8 @@ class QuizModel{
             }
         });
         points = Math.round(((points + (time/100))*weighting));
-        updateUserScore(points);
+        this.updateUserScore(points);
+        this.sortFavoriteCategories(results, points);
         return points;
     }
     answer: "Government"
