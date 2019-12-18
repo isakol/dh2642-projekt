@@ -42,6 +42,10 @@ class QuizModel{
         this.store.dispatch({type: "UPDATE_SCORE", score: newScore});
     }
 
+    updateClearRate(newRate){
+        this.store.dispatch({type: "UPDATE_CLEAR_RATE", clearRate: newRate});
+    }
+
 
 
     calculatePoints(results){
@@ -98,6 +102,16 @@ class QuizModel{
                 }
             });
         });
+        /*alternativt, om vi sparar clearRate per quiz:
+        let clearRate = 0.0;
+        ...
+        total += Array.length(quizzes);
+        quizzes.forEach((result) => {
+                clearRate += result.clear_rate;
+        });
+
+        let rate = clearRate/total;
+        */
         let rate = cleared/total;
         return rate;
     }
