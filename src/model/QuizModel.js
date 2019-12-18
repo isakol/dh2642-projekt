@@ -68,9 +68,7 @@ class QuizModel{
         this.sortFavoriteCategories(results, points);
         return points;
     }
-    answer: "Government"
-correct_answer: "Government"
-question: "What does the &quot;G&quot; mean in &quot;G-Man&quot;?"
+    
 
     calculateCategoryScaling(user, category){
         let scaling = 1.0;
