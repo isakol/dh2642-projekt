@@ -72,8 +72,8 @@ class QuizModel{
 
     calculateCategoryScaling(user, category){
         let scaling = 1.0;
-        let compCat = user.categoryPreferences.find(function(catName){
-            return catName.name === category;
+        let compCat = user.categoryPreferences.find(function(cat){
+            return cat.id === category;
         });
         if((user.categoryPreferences[0].times/compCat.times) < 0.75){
             scaling = 1.25;
