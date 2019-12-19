@@ -6,7 +6,7 @@ import {message, Spin} from "antd";
 import "./Quiz.css";
 import {connect} from "react-redux";
 import {get_categories} from "../../redux/actions/categories";
-import {updateScore} from "../../redux/actions/userData";
+import {updateScore, updateCategoryPreferences} from "../../redux/actions/userData";
 
 const error = (msg) => {
   message.error(msg);
@@ -66,8 +66,11 @@ class Quiz extends Component {
       if (this.state.questionNo >= 9) {
         clearInterval(this.interval);
         setTimeout(() => {
+          const score = 1000;
+
           this.setState({finished:true});
-          this.props.updateScore(1000);
+          this.props.updateScore(score);
+          this.props.updateCategoryPreferences(this.props.match.params.id, score);
         }, 2000);
       } else {
       setTimeout(() => {
@@ -182,7 +185,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     get_categories: () => dispatch(get_categories()),
-    updateScore: (score) => dispatch(updateScore(score))
+    updateScore: (score) => dispatch(updateScore(score)),
+    updateCategoryPreferences: (categoryId, score) => dispatch(updateCategoryPreferences(categoryId, score))
   }
 }
 

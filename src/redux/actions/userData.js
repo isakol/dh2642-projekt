@@ -15,6 +15,28 @@ export const updateScore = (score) => async dispatch => {
   //dispatch({type: "UPDATE_RESULTS", action: score});
 };
 
+export const updateCategoryPreferences = (categoryId, score) => async dispatch => {
+  console.log(score);
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+      firebase.database().ref('users/'+user.uid+'/categories/'+categoryId).transaction((data) => {
+        if (data == null) {
+          return {
+            times: 1,
+            points: score
+          }
+        } else {
+          data.points = data.points + score;
+          data.times++;
+          return data;
+        }
+      });
+    } else {
+      // No user is signed in.
+    }
+  });
+}
+
 /*
 
   export const updateCategoryPreferences = (categoryPreferences) => {
