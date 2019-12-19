@@ -24,6 +24,7 @@ class QuizModel{
                 cat.points += points;
                 cat.questionsAnswered += questionsAnswered;
                 cat.questionsCorrect += questionsCorrect;
+                category.clearRate = category.questionsCorrect/category.questionsAnswered;
             }
         });
         newState.sort(function(a,b){
@@ -44,7 +45,7 @@ class QuizModel{
         this.store.dispatch({type: "UPDATE_SCORE", score: newScore});
     }
 
-    updateClearRate(newRate){
+    updateTotalClearRate(newRate){
         this.store.dispatch({type: "UPDATE_CLEAR_RATE", clearRate: newRate});
     }
 
@@ -101,7 +102,6 @@ class QuizModel{
         let categoriesAmount = Array.length(categories);
         categories.forEach((category) => {
             //let results = quizzes.results;
-            category.clearRate = category.questionsCorrect/category.questionsAnswered;
             categoryClearRate += category.clearRate;
         });
         /*alternativt, om vi sparar clearRate per quiz:
