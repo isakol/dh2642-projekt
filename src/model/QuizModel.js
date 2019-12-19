@@ -24,7 +24,7 @@ class QuizModel{
                 cat.points += points;
                 cat.questionsAnswered += questionsAnswered;
                 cat.questionsCorrect += questionsCorrect;
-                category.clearRate = category.questionsCorrect/category.questionsAnswered;
+                cat.clearRate = questionsCorrect/questionsAnswered;
             }
         });
         newState.sort(function(a,b){
