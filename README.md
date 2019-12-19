@@ -13,13 +13,13 @@ We have gotten authentication working with Firebase. It is possible to sign up a
 * Home dashboard where a user can see statistics, activity, ranking etc.
 
 ## Project Structure
-index.js - initialization of firebase and configuration of react-redux-firebase.
-App.js - root component with our router.
+index.js - initialization of firebase and configuration of react-redux-firebase.  
+App.js - root component with our router.  
 RequireAuth.js - parent component to childs that require authentication. will display log in screen if user is not logged in.
 
-/redux/actions/ - where the redux actions are stored.
-/redux/reducers/ - where the reducers are stored. the reducers are combined in index.js
-/redux/constants.js - constants for all redux actions.
+/redux/actions/ - where the redux actions are stored.  
+/redux/reducers/ - where the reducers are stored. the reducers are combined in index.js  
+/redux/constants.js - constants for all redux actions.  
 
 ## Deployment
 The app is deployed to http://interaktionsprogrammering.herokuapp.com/
