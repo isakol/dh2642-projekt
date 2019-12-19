@@ -15,13 +15,15 @@ class QuizModel{
         this.store = store;
     }
 
-    sortFavoriteCategories(results, points){
+    sortFavoriteCategories(results, points, questionsAnswered, questionsCorrect){
         let newState = this.store.getState().userDataReducer.categoryPreferences;
         //let results = this.store.getState().quizResultsReducer.results;
         newState.forEach(cat =>{
             if(cat.id === results.category.id){
                 cat.times++;
                 cat.points += points;
+                cat.questionsAnswered += questionsAnswered;
+                cat.questionsCorrect += questionsCorrect;
             }
         });
         newState.sort(function(a,b){
@@ -52,6 +54,8 @@ class QuizModel{
         let points = 0;
         let time = 0.0;
         let weighting = 1.0;
+        let questionsAnswered = 0;
+        let questionsCorrect = 0;
         let user = this.store.getState().userDataReducer;
         if(results.category.id !== user.categoryPreferences[0].id){
             weighting = weighting * calculateCategoryScaling(user, results.category);
@@ -62,14 +66,16 @@ class QuizModel{
             weighting = weighting*1.5;
         }
         results.questions.forEach((question) => {
+            questionsAnswered++;
             if(question.answer == question.correct_answer){
                 points = points + 10;
                 time = time + question.time-left;
+                questionsCorrect++;
             }
         });
         points = Math.round(((points + (time/100))*weighting));
         this.updateUserScore(points);
-        this.sortFavoriteCategories(results, points);
+        this.sortFavoriteCategories(results, points, questionsAnswered, questionsCorrect);
         return points;
     }
     
@@ -90,17 +96,13 @@ class QuizModel{
     }
 
     calculateTotalClearRate(){
-        let cleared = 0;
-        let total = 0;
-        let quizzes = this.store.getState().userDataReducer.takenQuizzes;
-        quizzes.forEach((result) => {
+        let categoryClearRate = 0.0;
+        let categories = this.store.getState().userDataReducer.categoryPreferences;
+        let categoriesAmount = Array.length(categories);
+        categories.forEach((category) => {
             //let results = quizzes.results;
-            total += Array.length(result.questions);
-            result.questions.forEach((question) => {
-                if(question.answer == question.correct_answer){
-                    cleared++;
-                }
-            });
+            category.clearRate = category.questionsCorrect/category.questionsAnswered;
+            categoryClearRate += category.clearRate;
         });
         /*alternativt, om vi sparar clearRate per quiz:
         let clearRate = 0.0;
@@ -112,11 +114,11 @@ class QuizModel{
 
         let rate = clearRate/total;
         */
-        let rate = cleared/total;
-        return rate;
+        let categoryTotalClearRate = categoryClearRate/categoriesAmount;
+        return categoryTotalClearRate;
     }
 
-    calculateClearRate(results){
+    /*calculateCategoryClearRate(results){
         let cleared = 0;
         let total = Array.length(results.questions);
         //let results = this.store.getState().quizResultsReducer.results;
@@ -127,7 +129,7 @@ class QuizModel{
         });
         let rate = cleared/total;
         return rate;
-    }
+    }*/
 
     fetchQuiz(noOfQuestions, category, difficulty){
         let reqCategory = categories.forEach(loopCategory => {
