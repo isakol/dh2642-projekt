@@ -27,7 +27,7 @@ class Home extends Component {
     return (
       <React.Fragment>
         <div>Welcome home.</div>
-        <div>Categories that you have played: {(this.props.profile.isLoaded && this.props.cats.length > 0) ? typeof this.props.profile.categories != undefined ? this.categoriesPlayed(this.props.profile.categories) : "none" : null}</div>
+        <div>Categories that you previously have played: {(this.props.profile.isLoaded && this.props.cats.length > 0) ? typeof this.props.profile.categories != "undefined" ? this.categoriesPlayed(this.props.profile.categories) : "none" : null}</div>
       </React.Fragment>
     );
   }

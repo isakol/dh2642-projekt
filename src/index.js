@@ -31,7 +31,7 @@ const store = createStore(
 );
 
 const rrfConfig = {
-  userProfile: 'users'
+  userProfile: 'users',
 }
 
 const rrfProps = {
