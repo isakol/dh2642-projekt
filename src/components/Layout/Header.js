@@ -9,7 +9,6 @@ import "./Header.css"
 const { Header} = Layout;
 
 const LayoutHeader = (props) => {
-  console.log(props);
   return (
     <Header>
       <Row type="flex" justify="space-between">
@@ -37,7 +36,7 @@ const LayoutHeader = (props) => {
                     </Menu>
                   }>
                     <span className="header-button-trigger">
-                      <Button size="large"><Icon type="user" /> {props.auth.email} <Icon type="down" /></Button>
+                      <Button size="large"><Icon type="user" /> {(props.auth.displayName != null) ? props.auth.displayName : props.auth.email} <Icon type="down" /></Button>
                     </span>
                   </Dropdown>
               </React.Fragment>

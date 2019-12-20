@@ -1,0 +1,10 @@
+.ant-form {
+  border:1px solid #e8e8e8;
+  border-top:0;
+  background-color:#FFFFFF;
+  padding:24px 24px 0 24px;
+}
+
+.ant-alert {
+  margin-bottom:24px;
+}

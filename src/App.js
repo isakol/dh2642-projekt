@@ -15,7 +15,6 @@ import Settings from "./components/Settings"
 const { Footer, Sider, Content } = Layout;
 
 const App = (props) => {
-  console.log(props);
   return (
         <Router>
           <Layout>
