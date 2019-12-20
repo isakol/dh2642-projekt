@@ -15,11 +15,11 @@ class QuizModel{
         this.store = store;
     }
 
-    sortFavoriteCategories(results, points, questionsAnswered, questionsCorrect){
+    sortFavoriteCategories(categoryID, points, questionsAnswered, questionsCorrect){
         let newState = this.store.getState().userDataReducer.categoryPreferences;
         //let results = this.store.getState().quizResultsReducer.results;
         newState.forEach(cat =>{
-            if(cat.id === results.category.id){
+            if(cat.id === categoryID.id){
                 cat.times++;
                 cat.points += points;
                 cat.questionsAnswered += questionsAnswered;
@@ -76,7 +76,7 @@ class QuizModel{
         });
         points = Math.round(((points + (time/100))*weighting));
         this.updateUserScore(points);
-        this.sortFavoriteCategories(results, points, questionsAnswered, questionsCorrect);
+        this.sortFavoriteCategories(results.category.id, points, questionsAnswered, questionsCorrect);
         return points;
     }
     
@@ -86,6 +86,9 @@ class QuizModel{
         let compCat = user.categoryPreferences.find(function(cat){
             return cat.id === category;
         });
+        if(compCat==null){
+            return 2.0;
+        }
         if((user.categoryPreferences[0].times/compCat.times) < 0.75){
             scaling = 1.25;
         } else if((user.categoryPreferences[0].times/compCat.times) < 0.50){
@@ -97,12 +100,14 @@ class QuizModel{
     }
 
     calculateTotalClearRate(){
-        let categoryClearRate = 0.0;
+        let correct = 0;
+        let answers = 0;
         let categories = this.store.getState().userDataReducer.categoryPreferences;
-        let categoriesAmount = Array.length(categories);
+        //let categoriesAmount = Array.length(categories);
         categories.forEach((category) => {
             //let results = quizzes.results;
-            categoryClearRate += category.clearRate;
+            correct += category.questionsCorrect;
+            answers += category.questionsAnswered;
         });
         /*alternativt, om vi sparar clearRate per quiz:
         let clearRate = 0.0;
@@ -114,7 +119,7 @@ class QuizModel{
 
         let rate = clearRate/total;
         */
-        let categoryTotalClearRate = categoryClearRate/categoriesAmount;
+        let categoryTotalClearRate = correct/answers;
         return categoryTotalClearRate;
     }
 

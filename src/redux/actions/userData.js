@@ -15,7 +15,7 @@ export const updateScore = (score) => async dispatch => {
   //dispatch({type: "UPDATE_RESULTS", action: score});
 };
 
-export const updateCategoryPreferences = (categoryId, score) => async dispatch => {
+export const updateCategoryPreferences = (categoryId, score, correct, answered) => async dispatch => {
   console.log(score);
   firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
@@ -23,11 +23,15 @@ export const updateCategoryPreferences = (categoryId, score) => async dispatch =
         if (data == null) {
           return {
             times: 1,
-            points: score
+            points: score,
+            questionsAnswered: answered,
+            questionsCorrect: correct
           }
         } else {
           data.points = data.points + score;
           data.times++;
+          data.questionsAnswered += answered;
+          data.questionsCorrect += correct;
           return data;
         }
       });
