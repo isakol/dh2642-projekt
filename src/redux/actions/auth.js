@@ -1,7 +1,6 @@
 import * as firebase from "firebase/app";
 import "firebase/auth";
 import {startLoading, finishLoading} from "./loading";
-import {withRouter} from 'react-router-dom';
 
 import {
   SIGNUP_SUCCESS,

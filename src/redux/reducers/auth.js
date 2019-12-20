@@ -19,6 +19,8 @@ const authReducer = function(state = {message: ""}, action) {
     case SIGNOUT_ERROR:
       state = {...state, message: action.message}
       break;
+
+    default: //do nothing
   }
 
   return state;

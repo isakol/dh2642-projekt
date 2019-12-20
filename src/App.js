@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import { Layout, Col, Row, Badge, Avatar, Button, Dropdown, Menu, Icon } from 'antd'
+import { Layout} from 'antd'
 import { Link, BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { connect } from "react-redux";
 import Quiz from "./components/Quiz";
@@ -10,10 +10,12 @@ import RequireAuth from "./RequireAuth";
 import Header from "./components/Layout/Header";
 import SelectCategory from "./components/NewQuiz/SelectCategory";
 import SelectDifficulty from "./components/NewQuiz/SelectDifficulty";
+import Settings from "./components/Settings"
 
 const { Footer, Sider, Content } = Layout;
 
-const App = () => {
+const App = (props) => {
+  console.log(props);
   return (
         <Router>
           <Layout>
@@ -25,7 +27,9 @@ const App = () => {
                 <Route exact path="/new-quiz/:id" render={(props) => <RequireAuth><SelectDifficulty match={props.match} /></RequireAuth>} />
                 <Route exact path="/new-quiz"><RequireAuth><SelectCategory /></RequireAuth></Route>
                 <Route exact path="/quiz/:id/:difficulty(|easy|medium|hard)?" render={(props) => <RequireAuth><Quiz match={props.match}/></RequireAuth>} />
-                {/*<Route exact={true}>Error 404. Page could not be found.</Route>*/}
+                <Route path="/login" render={(props) => <RequireAuth>{props.history.push("/")}</RequireAuth>} />
+                <Route path="/settings"><RequireAuth><Settings /></RequireAuth></Route>
+                <Route exact={true}>Error 404. Page could not be found.</Route>
               </Switch>
             </Content>
             <Footer style={{textAlign: 'center'}}>

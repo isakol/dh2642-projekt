@@ -3,9 +3,7 @@ import {Card, Row, Col, Button, Progress } from "antd";
 
 
 class QuestionCard extends Component {
-  constructor(props) {
-    super(props);
-  }
+
   render() {
 
     return (

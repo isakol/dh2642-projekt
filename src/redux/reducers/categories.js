@@ -16,6 +16,8 @@ const categoryReducer = function(state = {categories:[], status:"loading", messa
     case CATEGORIES_LOADING:
       state = {...state, status:"loading", message: ""};
     break;
+
+    default: //do nothing
   }
 
   return state;
