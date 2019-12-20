@@ -3,6 +3,11 @@ var CanvasJSReact = require('./canvasjs.react');
 var CanvasJSChart = CanvasJSReact.CanvasJSChart;
 
 class PieChart extends Component {
+
+    constructor(props){
+        super(props);
+    }
+    
 	render() {
         let dataValues = props.userData.categoryPreferences.map(cat => {
 
