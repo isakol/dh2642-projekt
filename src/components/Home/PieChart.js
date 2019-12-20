@@ -9,12 +9,11 @@ class PieChart extends Component {
     }
     
 	render() {
-        let dataValues = props.userData.categoryPreferences.map(cat => {
-
-            {
-                y: cat.points,
-                label: "testCategory"
-            }
+        let dataValues = props.userData.categoryPreferences.map(({points, id}) => {
+            ({
+                y: points,
+                label: id
+            })
         });
 		const options = {
 			exportEnabled: true,
