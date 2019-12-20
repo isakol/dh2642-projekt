@@ -10,23 +10,25 @@ import RequireAuth from "./RequireAuth";
 import Header from "./components/Layout/Header";
 import SelectCategory from "./components/NewQuiz/SelectCategory";
 import SelectDifficulty from "./components/NewQuiz/SelectDifficulty";
-import Settings from "./components/Settings"
+import Settings from "./components/Settings";
+import Home from "./components/Home"
 
 const { Footer, Sider, Content } = Layout;
 
 const App = (props) => {
+  let loggedIn = !props.auth.isEmpty;
   return (
         <Router>
           <Layout>
             <Header/>
             <Content>
               <Switch>
-                <Route exact path="/"><div>Welcome home</div></Route>
+                <Route exact path="/">{!props.auth.isEmpty ? <Home /> : <div>Welcome to our project site</div>}</Route>
                 <Route path="/leaderboards" component={Leaderboards} />
                 <Route exact path="/new-quiz/:id" render={(props) => <RequireAuth><SelectDifficulty match={props.match} /></RequireAuth>} />
                 <Route exact path="/new-quiz"><RequireAuth><SelectCategory /></RequireAuth></Route>
                 <Route exact path="/quiz/:id/:difficulty(|easy|medium|hard)?" render={(props) => <RequireAuth><Quiz match={props.match}/></RequireAuth>} />
-                <Route path="/login" render={(props) => <RequireAuth>{props.history.push("/")}</RequireAuth>} />
+                <Route path="/login" render={(props) => {return !loggedIn ? <Login /> : props.history.push("/")}} />
                 <Route path="/settings"><RequireAuth><Settings /></RequireAuth></Route>
                 <Route exact={true}>Error 404. Page could not be found.</Route>
               </Switch>

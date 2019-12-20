@@ -32,6 +32,7 @@ class Login extends Component {
       isSubmitting: false
     }
   }
+
   submitClick = (e, check) => {
     if (e) e.preventDefault();
     let errors = {};

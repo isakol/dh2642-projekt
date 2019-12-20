@@ -27,7 +27,7 @@ const Settings = (props) => {
     <React.Fragment>
       {
         msgDisplay == true ?
-          props.status == "success" ? <Alert message="We successfully updated your information" type="success" /> : props.status == "error" ? <Alert message={props.message} type="error" /> : null
+          props.status == "success" ? <Alert className="settings-alert" message="We successfully updated your information" type="success" /> : props.status == "error" ? <Alert className="settings-alert" message={props.message} type="error" /> : null
         :
           null
       }
@@ -39,7 +39,7 @@ const Settings = (props) => {
         onBack={() => props.history.push("/")}
         title="Settings"
       />
-      <Form onSubmit={e => submitForm(e)} labelCol={{sm: {span:6}, md: {span:5}, lg: {span:3}, xl: {span: 2}}} wrapperCol={{sm: {span:18}, md: {span:19}, lg: {span:21}, xl: {span:22}}}>
+      <Form className="settings-form" onSubmit={e => submitForm(e)} labelCol={{sm: {span:6}, md: {span:5}, lg: {span:3}, xl: {span: 2}}} wrapperCol={{sm: {span:18}, md: {span:19}, lg: {span:21}, xl: {span:22}}}>
         <Form.Item label="E-mail">
           <Input value={props.auth.email} disabled />
         </Form.Item>

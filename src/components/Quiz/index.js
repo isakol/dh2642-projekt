@@ -70,7 +70,7 @@ class Quiz extends Component {
 
           this.setState({finished:true});
           this.props.updateScore(score);
-          this.props.updateCategoryPreferences(this.props.match.params.id, score);
+          this.props.updateCategoryPreferences(this.props.match.params.id, score, this.state.answers.filter((a) => a.answer == a.correct_answer).length, this.state.answers.length);
         }, 2000);
       } else {
       setTimeout(() => {
@@ -186,7 +186,7 @@ function mapDispatchToProps(dispatch) {
   return {
     get_categories: () => dispatch(get_categories()),
     updateScore: (score) => dispatch(updateScore(score)),
-    updateCategoryPreferences: (categoryId, score) => dispatch(updateCategoryPreferences(categoryId, score))
+    updateCategoryPreferences: (categoryId, score, correct, answered) => dispatch(updateCategoryPreferences(categoryId, score, correct, answered))
   }
 }
 

@@ -13,7 +13,7 @@ const LayoutHeader = (props) => {
     <Header>
       <Row type="flex" justify="space-between">
         <Col className="header-start">
-          <span className="logo"><Link to="/">InQuizitor</Link></span>
+          <span className="logo"><Link to="/">Quiz App</Link></span>
           <span className="start-button">
             <Link to="/new-quiz">
               <Button type="primary" shape="round" size="large">Start quiz</Button>

@@ -8,7 +8,9 @@ import {get_categories} from "../../redux/actions/categories";
 class SelectCategory extends Component {
 
   componentDidMount() {
-    this.props.get_categories();
+    if (this.props.cats.length == 0) {
+      this.props.get_categories();
+    }
   }
 
   render() {

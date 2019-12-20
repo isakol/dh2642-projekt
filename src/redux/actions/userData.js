@@ -16,24 +16,16 @@ export const updateScore = (score) => async dispatch => {
 };
 
 export const updateCategoryPreferences = (categoryId, score, correct, answered) => async dispatch => {
-  console.log(score);
+  console.log(answered);
+  console.log(correct);
   firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
       firebase.database().ref('users/'+user.uid+'/categories/'+categoryId).transaction((data) => {
-        if (data == null) {
-          return {
-            times: 1,
-            points: score,
-            questionsAnswered: answered,
-            questionsCorrect: correct
-          }
-        } else {
-          data.points = data.points + score;
-          data.times++;
-          data.questionsAnswered += answered;
-          data.questionsCorrect += correct;
-          return data;
-        }
+        data.points == null ? data.points = score : data.points += score;
+        data.times == null ? data.times = 1 : data.times++;
+        data.answered == null ? data.answered = answered : data.answered += answered;
+        data.correct == null ? data.correct = correct : data.correct += correct;
+        return data;
       });
     } else {
       // No user is signed in.
