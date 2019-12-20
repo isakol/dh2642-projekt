@@ -21,10 +21,19 @@ export const updateCategoryPreferences = (categoryId, score, correct, answered) 
   firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
       firebase.database().ref('users/'+user.uid+'/categories/'+categoryId).transaction((data) => {
-        data.points == null ? data.points = score : data.points += score;
-        data.times == null ? data.times = 1 : data.times++;
-        data.answered == null ? data.answered = answered : data.answered += answered;
-        data.correct == null ? data.correct = correct : data.correct += correct;
+        if (data != null) {
+          data.points == null ? data.points = score : data.points += score;
+          data.times == null ? data.times = 1 : data.times++;
+          data.answered == null ? data.answered = answered : data.answered += answered;
+          data.correct == null ? data.correct = correct : data.correct += correct;
+        } else {
+          data = {
+            points: score,
+            times: 1,
+            correct: correct,
+            answered: answered
+          }
+        }
         return data;
       });
     } else {
