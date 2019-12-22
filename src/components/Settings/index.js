@@ -14,7 +14,8 @@ const Settings = (props) => {
   const submitForm = (e) => {
     e.preventDefault();
     if (displayName != props.auth.displayName) {
-      props.firebase.updateAuth({displayName: displayName}).then()
+      props.firebase.updateAuth({displayName: displayName});
+      props.firebase.updateProfile({displayName: displayName});
       setMsgDisplay(true);
     }
   }
