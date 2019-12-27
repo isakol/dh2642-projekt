@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import {Card, Row, Col, Button, Progress } from "antd";
+import he from "he";
 
 
 class QuestionCard extends Component {
@@ -22,7 +23,7 @@ class QuestionCard extends Component {
                     <div>The correct answer was: <span className="correct-answer">{this.props.correctOrIncorrect.correct_answer}</span></div>
                   </div>
             :
-              this.props.questionText
+              he.decode(this.props.questionText)
             }
           </div>
           <div>
