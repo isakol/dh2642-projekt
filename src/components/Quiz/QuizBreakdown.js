@@ -1,5 +1,6 @@
 import React from "react";
 import {Card, Col, Row} from "antd";
+import he from "he";
 
 
 const QuizBreakdown = (props) => {
@@ -12,7 +13,7 @@ const QuizBreakdown = (props) => {
         <React.Fragment>
           <div>Quiz Breakdown</div>
           <div>Correct answers: {correctNo + "/" + noOfQuestions + " (" + clearRate + ")"}</div>
-          <div>Points gained: 1250</div>
+          <div>Points gained: {props.score}</div>
         </React.Fragment>
       }
     >
@@ -23,9 +24,9 @@ const QuizBreakdown = (props) => {
               <div className="breakdown" key={i}>
                 <div className="breakdown-number" style={q.answer == q.correct_answer ? {borderColor: "#52c41a", color: "#52c41a"} : {borderColor: "#f5222d", color: "#f5222d"}}>{i+1}</div>
                 <div className="breakdown-main">
-                  <div className="breakdown-title">{q.question}</div>
-                  <div>{q.answer == "" ? "You didn't answer" : "You answered: " + q.answer}</div>
-                  {q.correct_answer == q.answer ? null : <div>Correct answer: {q.correct_answer}</div>}
+                  <div className="breakdown-title">{he.decode(q.question)}</div>
+                  <div>{q.answer == "" ? "You didn't answer" : "You answered: " + he.decode(q.answer)}</div>
+                  {q.correct_answer == q.answer ? null : <div>Correct answer: {he.decode(q.correct_answer)}</div>}
                 </div>
               </div>
             )

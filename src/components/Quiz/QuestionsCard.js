@@ -20,7 +20,7 @@ class QuestionCard extends Component {
                 :
                   <div>
                     <div className="question-incorrect">Incorrect</div>
-                    <div>The correct answer was: <span className="correct-answer">{this.props.correctOrIncorrect.correct_answer}</span></div>
+                    <div>The correct answer was: <span className="correct-answer">{he.decode(this.props.correctOrIncorrect.correct_answer)}</span></div>
                   </div>
             :
               he.decode(this.props.questionText)
@@ -37,7 +37,7 @@ class QuestionCard extends Component {
             {
               this.props.alternatives.slice(0,2).map((ans, i) => {
                 return (
-                  <Col span={12} key={i}><Button value={ans} onClick={e => this.props.answerClick(e.target.value)}type="default" block>{ans}</Button></Col>
+                  <Col span={12} key={i}><Button value={ans} onClick={e => this.props.answerClick(e.target.value)}type="default" block>{he.decode(ans)}</Button></Col>
                 );
               })
             }
@@ -46,7 +46,7 @@ class QuestionCard extends Component {
           {
             this.props.alternatives.slice(2,4).map((ans, i) => {
               return (
-                <Col span={12} key={i}><Button value={ans} onClick={e => this.props.answerClick(e.target.value)} type="default" block>{ans}</Button></Col>
+                <Col span={12} key={i}><Button value={ans} onClick={e => this.props.answerClick(e.target.value)} type="default" block>{he.decode(ans)}</Button></Col>
               );
             })
           }

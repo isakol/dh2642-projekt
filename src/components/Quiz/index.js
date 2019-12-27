@@ -2,15 +2,11 @@ import React, {Component} from "react";
 import QuestionsCard from "./QuestionsCard";
 import QuizBreakdown from "./QuizBreakdown";
 import QuizStart from "./QuizStart";
-import {message, Spin} from "antd";
+import {Spin} from "antd";
 import "./Quiz.css";
 import {connect} from "react-redux";
 import {get_categories} from "../../redux/actions/categories";
 import {updateScore, updateCategoryPreferences} from "../../redux/actions/userData";
-
-const error = (msg) => {
-  message.error(msg);
-};
 
 class Quiz extends Component {
 
@@ -26,6 +22,7 @@ class Quiz extends Component {
       status: "loading",
       questionNo: 0,
       answers: [],
+      score: 0,
       correctOrIncorrect: null
     }
     this.startClick = this.startClick.bind(this);
@@ -48,45 +45,91 @@ class Quiz extends Component {
   }
   answer(answer) {
     if (!this.state.paused) {
-    this.setState(
-      {
-        paused: true,
-        answers: this.state.answers.concat({
-          question: this.state.questions[this.state.questionNo].question,
-          answer: answer,
-          correct_answer: this.state.questions[this.state.questionNo].correct_answer,
-        }),
-        correctOrIncorrect:
+      this.setState(
         {
-          correct: (this.state.questions[this.state.questionNo].correct_answer == answer),
-          correct_answer: (this.state.questions[this.state.questionNo].correct_answer),
+          paused: true,
+          answers: this.state.answers.concat({
+            question: this.state.questions[this.state.questionNo].question,
+            answer: answer,
+            correct_answer: this.state.questions[this.state.questionNo].correct_answer,
+            timeLeft: this.state.timeLeft
+          }),
+          correctOrIncorrect:
+          {
+            correct: (this.state.questions[this.state.questionNo].correct_answer == answer),
+            correct_answer: (this.state.questions[this.state.questionNo].correct_answer),
+          }
         }
-      }
-    );
-      if (this.state.questionNo >= 9) {
-        clearInterval(this.interval);
-        setTimeout(() => {
-          const score = 1000;
+      );
+        if (this.state.questionNo >= 9) {
+          clearInterval(this.interval);
+          setTimeout(() => {
 
-          this.setState({finished:true});
-          this.props.updateScore(score);
-          this.props.updateCategoryPreferences(this.props.match.params.id, score, this.state.answers.filter((a) => a.answer == a.correct_answer).length, this.state.answers.length);
-        }, 2000);
-      } else {
-      setTimeout(() => {
-        this.setState({
-          paused: false,
-          timeLeft:10000,
-          questionNo:this.state.questionNo+1,
-          correctOrIncorrect: null
-        })
-      }, 2000);
+            const score = 1000;
+
+            this.setState({finished:true});
+            let points = 0;
+            let time = 0;
+            let weighting = 1;
+
+            if (typeof this.props.categoryPreferences !== "undefined") {
+              let catPref = this.props.categoryPreferences;
+
+              let mostPlayedCat = Object.keys(catPref).reduce((max, cat) => max.times > cat.times ? max : cat);
+
+
+              if(mostPlayedCat !== this.props.match.params.id){
+                let thisCatTimes = typeof catPref[this.props.match.params.id] !== "undefined" ? catPref[this.props.match.params.id].times : 0;
+                weighting = weighting * this.calculateCategoryScaling(catPref[mostPlayedCat].times, thisCatTimes);
+              }
+            }
+
+            if(this.props.match.params.difficulty === "medium"){
+                weighting= weighting *1.25;
+            } else if(this.props.match.params.difficulty === "hard"){
+                weighting = weighting*1.5;
+            }
+
+            this.state.answers.forEach((question) => {
+                if(question.answer == question.correct_answer){
+                    points = points + 10;
+                    time = time + question.timeLeft;
+                }
+            });
+            points = Math.round(((points + (time/100))*weighting));
+            this.setState({score: points, finished: true}, () => {
+              this.props.updateCategoryPreferences(this.props.match.params.id, points, this.state.answers.filter((a) => a.answer == a.correct_answer).length, this.state.answers.length);
+              this.props.updateScore(points);
+            });
+
+
+          }, 1750);
+        } else {
+        setTimeout(() => {
+          this.setState({
+            paused: false,
+            timeLeft:10000,
+            questionNo:this.state.questionNo+1,
+            correctOrIncorrect: null
+          })
+        }, 1750);
+      }
     }
   }
+
+  calculateCategoryScaling(mostPlayedCatTimes, thisCatTimes){
+      let scaling = 1.0;
+      if((thisCatTimes/mostPlayedCatTimes) < 0.75){
+          scaling = 1.25;
+      } else if((thisCatTimes/mostPlayedCatTimes) < 0.50){
+          scaling = 1.5;
+      } else if((thisCatTimes/mostPlayedCatTimes) < 0.25){
+          scaling = 2.0;
+      }
+      return scaling;
   }
+
   componentDidMount() {
-
-
     const noOfQuestions = 10;
     let reqString = "https://opentdb.com/api.php?amount=";
     reqString += noOfQuestions + "&category=";
@@ -142,6 +185,7 @@ class Quiz extends Component {
           if (this.state.finished) {
             content =
             <QuizBreakdown
+              score={this.state.score}
               answers={this.state.answers}
             />
           } else {
@@ -178,7 +222,8 @@ function mapStateToProps(state) {
   return {
     cats: state.categoryReducer.categories,
     categoriesStatus: state.categoryReducer.status,
-    categoriesMessage: state.categoryReducer.message
+    categoriesMessage: state.categoryReducer.message,
+    categoryPreferences: state.firebaseReducer.profile.categories
   }
 }
 
