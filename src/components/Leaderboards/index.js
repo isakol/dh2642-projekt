@@ -39,7 +39,6 @@ const enhance = compose(
 );
 
 const Leaderboards = props => {
-  console.log(props);
   return (
     <Row gutter={15}>
       <Col xs={24} md={12} lg={8} xl={6}>
@@ -55,8 +54,6 @@ const Leaderboards = props => {
                     <div className="player-name">
                       {"displayName" in player.value
                         ? player.value.displayName
-                        : "email" in player.value
-                        ? player.value.email
                         : player.key}
                       {i == 0 ? (
                         <span> &#129351;</span>
