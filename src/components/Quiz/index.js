@@ -134,7 +134,7 @@ class Quiz extends Component {
     let reqString = "https://opentdb.com/api.php?amount=";
     reqString += noOfQuestions + "&category=";
     reqString += this.props.match.params.id + "&difficulty=";
-    reqString += this.props.match.params.difficulty + "&type=multiple";
+    reqString += this.props.match.params.difficulty// + "&type=multiple";
     this.setState({status: "loading"})
     fetch(reqString, {method:"GET"})
     .then(response => {

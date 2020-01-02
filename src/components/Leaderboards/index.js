@@ -47,7 +47,7 @@ const Leaderboards = props => {
             {!isLoaded(props.top10) ? (
               <Spin />
             ) : !isEmpty(props.top10) ? (
-              props.top10.reverse().map((player, i) => {
+              [...props.top10].reverse().map((player, i) => {
                 return (
                   <div className="a-player" key={i}>
                     <div className="player-no">{i + 1}.</div>
