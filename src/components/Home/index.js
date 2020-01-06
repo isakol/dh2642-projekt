@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { get_categories } from "../../redux/actions/categories";
-import { Row, Col, Card, Progress, Skeleton } from "antd";
+import { Row, Col, Card, Progress, Skeleton, List } from "antd";
 import "./Home.css";
 
 class Home extends Component {
@@ -19,6 +19,7 @@ class Home extends Component {
     let totalAnswers = 0;
     let totalCorrect = 0;
     let favoriteCategories = [];
+    let recentActivity = [];
 
     if (typeof this.props.profile.categories !== "undefined") {
       for (var k in this.props.profile.categories) {
@@ -34,6 +35,24 @@ class Home extends Component {
       favoriteCategories.sort((a, b) => {
         return b.times - a.times;
       });
+
+      if (typeof this.props.profile.history !== "undefined") {
+        for (var k in this.props.profile.history) {
+          let findCategory = this.props.cats.find(
+            cat => cat.id == this.props.profile.history[k].id
+          );
+          if (findCategory != undefined) {
+            recentActivity.push({
+              name: findCategory.name,
+              score: this.props.profile.history[k].score,
+              difficulty: this.props.profile.history[k].difficulty,
+              correct: this.props.profile.history[k].correct,
+              answered: this.props.profile.history[k].answered,
+              timestamp: this.props.profile.history[k].timestamp
+            });
+          }
+        }
+      }
     }
 
     return (
@@ -93,10 +112,52 @@ class Home extends Component {
             </Card>
           </Col>
           <Col span={8}>
-            <Card title="Recent activity"></Card>
+            <Card title="Recent activity">
+              {this.props.categoryStatus == "success" &&
+              this.props.profile.isLoaded ? (
+                typeof this.props.profile.history != "undefined" ? (
+                  <List>
+                    {[...recentActivity].reverse().map((c, i) => {
+                      const activityDate = new Date(c.timestamp);
+                      return (
+                        <List.Item>
+                          <div className="activity-time">
+                            <div>{activityDate.toLocaleDateString()}</div>
+                            <div>
+                              {activityDate.getHours() +
+                                ":" +
+                                activityDate.getMinutes()}
+                            </div>
+                          </div>
+                          <List.Item.Meta
+                            title={c.name + " (" + c.difficulty + ")"}
+                            description={
+                              <span>
+                                {c.correct +
+                                  "/" +
+                                  c.answered +
+                                  " (" +
+                                  Math.round((100 * c.correct) / c.answered) +
+                                  "%) "}
+                                <span className="activity-score">
+                                  +{c.score}
+                                </span>
+                              </span>
+                            }
+                          />
+                        </List.Item>
+                      );
+                    })}
+                  </List>
+                ) : (
+                  "You have not played any quiz yet"
+                )
+              ) : (
+                <Skeleton active />
+              )}
+            </Card>
           </Col>
         </Row>
-        {}
       </React.Fragment>
     );
   }
