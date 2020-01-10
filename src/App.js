@@ -8,12 +8,13 @@ import Login from "./components/Login";
 import Leaderboards from "./components/Leaderboards";
 import RequireAuth from "./RequireAuth";
 import Header from "./components/Layout/Header";
+import Footer from "./components/Layout/Footer";
 import SelectCategory from "./components/NewQuiz/SelectCategory";
 import SelectDifficulty from "./components/NewQuiz/SelectDifficulty";
 import Settings from "./components/Settings";
 import Home from "./components/Home"
 
-const { Footer, Sider, Content } = Layout;
+const { Content } = Layout;
 
 const App = (props) => {
   let loggedIn = !props.auth.isEmpty;
@@ -33,9 +34,7 @@ const App = (props) => {
                 <Route exact={true}>Error 404. Page could not be found.</Route>
               </Switch>
             </Content>
-            <Footer style={{textAlign: 'center'}}>
-              © 2019 Erik Mickols, Isak Olsson
-            </Footer>
+            <Footer/>
           </Layout>
         </Router>
   );

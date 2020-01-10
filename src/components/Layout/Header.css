@@ -13,3 +13,16 @@
   margin-right: 12px;
   font-size: 12px;
 }
+
+.medium-and-down {
+  display:none;
+}
+
+@media screen and (max-width: 767px) {
+  .start-button, .leaderboard-button, .large-and-up {
+    display:none;
+  }
+  .medium-and-down {
+    display:block;
+  }
+}
