@@ -37,13 +37,13 @@ class Quiz extends Component {
       this.setState({ started: true });
       this.interval = setInterval(() => {
         if (!this.state.paused) {
-          let currentTimeLeft = this.state.timeLeft - 200;
+          let currentTimeLeft = this.state.timeLeft - 100;
           this.setState({ timeLeft: currentTimeLeft });
           if (currentTimeLeft <= 0) {
             this.answer("");
           }
         }
-      }, 200);
+      }, 100);
     }
   }
   answer(answer) {
@@ -162,17 +162,33 @@ class Quiz extends Component {
       .then(response => {
         if (response.ok) {
           response.json().then(questions => {
-            questions.results.map(q => {
-              q.alternatives = q.incorrect_answers;
-              q.alternatives.push(q.correct_answer);
-              //shuffle the alternatives
-              q.alternatives = q.alternatives
-                .map(a => ({ sort: Math.random(), value: a }))
-                .sort((a, b) => a.sort - b.sort)
-                .map(a => a.value);
-              delete q.incorrect_answers;
-            });
-            this.setState({ status: "success", questions: questions.results });
+            if (questions.response_code == 0) {
+              questions.results.map(q => {
+                q.alternatives = q.incorrect_answers;
+                q.alternatives.push(q.correct_answer);
+                //shuffle the alternatives
+                q.alternatives = q.alternatives
+                  .map(a => ({ sort: Math.random(), value: a }))
+                  .sort((a, b) => a.sort - b.sort)
+                  .map(a => a.value);
+                delete q.incorrect_answers;
+              });
+              this.setState({
+                status: "success",
+                questions: questions.results
+              });
+            } else if (questions.response_code == 1) {
+              this.setState({
+                status: "error",
+                message:
+                  "This quiz is under development and does not have enough questions right now."
+              });
+            } else {
+              this.setState({
+                status: "error",
+                message: "An unknown error occured when loading the quiz."
+              });
+            }
           });
         } else {
           this.setState({
@@ -244,6 +260,7 @@ class Quiz extends Component {
           content = (
             <QuizStart
               status={this.state.status}
+              id={this.props.match.params.id}
               difficulty={this.props.match.params.difficulty}
               name={findCategory.name}
               message={this.state.message}
