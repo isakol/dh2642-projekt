@@ -43,7 +43,8 @@ class Login extends Component {
     } else if (this.state.email && !/\S+@\S+\.\S+/.test(this.state.email)) {
       errors = {...errors, invalidEmail: "Please enter a a valid e-mail address."};
     }
-    if(!this.state.username){
+
+    if(this.state.newUser && !this.state.username){
       errors = {...errors, emptyUsername: "Please enter a username."};
     } /*else if (this.state.username && firebase.database.ref("users").find(this.state.username)) {
       errors = {...errors, invalidUsername: "Please enter a different username."}
@@ -60,7 +61,7 @@ class Login extends Component {
         if (this.state.newUser) {
           this.props.signup(this.state.email, this.state.username, this.state.password);
         } else {
-          this.props.signin(this.state.email, this.state.username, this.state.password);
+          this.props.signin(this.state.email, this.state.password, () => {});
         }
       }
     });
