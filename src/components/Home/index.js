@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useState} from "react";
 import { connect } from "react-redux";
 import { get_categories } from "../../redux/actions/categories";
 import { Row, Col, Card, Progress, Skeleton, List } from "antd";
@@ -57,7 +57,7 @@ class Home extends Component {
 
     return (
       <React.Fragment>
-        <div>Welcome home.</div>
+        <Card><div>Welcome home, {this.props.auth.displayName}!</div></Card>
         <Row gutter={30}>
           <Col span={8}>
             <Card title="Correct answers">
@@ -74,6 +74,15 @@ class Home extends Component {
                     <div>
                       {totalCorrect}/{totalAnswers} (
                       {Math.round((+totalCorrect / totalAnswers) * 100) + "%"})
+                      {((totalCorrect/totalAnswers) >= 0.75) ? (<div>
+                        Well done!</div>
+                        ) : ((totalCorrect/totalAnswers) >= 0.5) ?(<div>
+                          You are well on your way to good scores!</div>
+                        ) : ((totalCorrect/totalAnswers) >= 0.25) ?(<div>
+                          Perhaps you should pick easier difficulties before you feel more confident?</div>
+                        ) : (<div>
+                          Ouch! We don't know what we should recommend you. Going back to school perhaps?
+                          </div>)}
                     </div>
                   </React.Fragment>
                 ) : (
@@ -102,6 +111,7 @@ class Home extends Component {
                         </Row>
                       );
                     })}
+                    <div id="favoritePlease">Play your less frequent category picks for a score boost!.</div>
                   </React.Fragment>
                 ) : (
                   "You have not played any quiz yet"
@@ -166,6 +176,7 @@ class Home extends Component {
 function mapStateToProps(state) {
   return {
     profile: state.firebaseReducer.profile,
+    auth: state.firebaseReducer.auth,
     cats: state.categoryReducer.categories,
     categoryStatus: state.categoryReducer.status,
     categoryMessage: state.categoryReducer.message

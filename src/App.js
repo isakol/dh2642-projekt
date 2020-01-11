@@ -24,7 +24,7 @@ const App = (props) => {
             <Header/>
             <Content>
               <Switch>
-                <Route exact path="/">{!props.auth.isEmpty ? <Home /> : <div>Welcome to our project site</div>}</Route>
+                <Route exact path="/">{!props.auth.isEmpty ? <RequireAuth><Home /></RequireAuth> : <div>Welcome to our project site</div>}</Route>
                 <Route path="/leaderboards" component={Leaderboards} />
                 <Route exact path="/new-quiz/:id" render={(props) => <RequireAuth><SelectDifficulty match={props.match} /></RequireAuth>} />
                 <Route exact path="/new-quiz"><RequireAuth><SelectCategory /></RequireAuth></Route>
