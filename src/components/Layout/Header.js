@@ -60,8 +60,8 @@ const LayoutHeader = props => {
                 <span className="header-button-trigger">
                   <Button size="large">
                     <Icon type="user" />{" "}
-                    {props.auth.displayName != null
-                      ? props.auth.displayName
+                    {props.profile.displayName != null
+                      ? props.profile.displayName
                       : props.auth.email}{" "}
                     <Icon type="down" />
                   </Button>
