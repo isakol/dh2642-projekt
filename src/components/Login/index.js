@@ -28,6 +28,7 @@ class Login extends Component {
       newUser: false,
       errors: {},
       email: "",
+      username: "",
       password: "",
       isSubmitting: false
     }
@@ -42,6 +43,11 @@ class Login extends Component {
     } else if (this.state.email && !/\S+@\S+\.\S+/.test(this.state.email)) {
       errors = {...errors, invalidEmail: "Please enter a a valid e-mail address."};
     }
+    if(!this.state.username){
+      errors = {...errors, emptyUsername: "Please enter a username."};
+    } /*else if (this.state.username && firebase.database.ref("users").find(this.state.username)) {
+      errors = {...errors, invalidUsername: "Please enter a different username."}
+    }*/
     if (!this.state.password) {
       errors = {...errors, emptyPassword: "Please enter a password."};
     }
@@ -52,9 +58,9 @@ class Login extends Component {
     }, () => {
       if (Object.keys(this.state.errors).length === 0 && this.state.isSubmitting) {
         if (this.state.newUser) {
-          this.props.signup(this.state.email, this.state.password);
+          this.props.signup(this.state.email, this.state.username, this.state.password);
         } else {
-          this.props.signin(this.state.email, this.state.password);
+          this.props.signin(this.state.email, this.state.username, this.state.password);
         }
       }
     });
@@ -64,6 +70,11 @@ class Login extends Component {
   passwordChange = e => {
     e.persist();
     this.setState({password: e.target.value});
+  };
+
+  usernameChange = e => {
+    e.persist();
+    this.setState({username: e.target.value});
   };
 
   emailChange = e => {
@@ -85,6 +96,15 @@ class Login extends Component {
               help={this.state.errors.emptyEmail ? "Please enter an e-mail address" : this.state.errors.invalidEmail ? "Please enter a valid e-mail address" : null}
             >
               <Input type="email" value={this.state.email} placeholder="E-mail address" onChange={this.emailChange} />
+            </Form.Item>
+
+            <Form.Item
+              label="Username"
+              labelAlign="left"
+              validateStatus={(this.state.errors.emptyUsername || this.state.errors.invalidUsername) ? "error" : null}
+              help={this.state.errors.emptyUsername ? "Please enter a username" : this.state.invalidUsername ? "Please enter a different username" : null}
+            >
+              <Input type="username" value={this.state.username} placeholder="Username" onChange={this.usernameChange} />
             </Form.Item>
 
             <Form.Item
@@ -120,8 +140,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    signup: (email, password) => dispatch(signup(email, password)),
-    signin: (email, password, callback) => dispatch(signin(email, password, callback)),
+    signup: (email, username, password) => dispatch(signup(email, username, password)),
+    signin: (email, username, password, callback) => dispatch(signin(email, username, password, callback)),
   };
 }
 
