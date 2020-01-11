@@ -109,7 +109,7 @@ class Home extends Component {
                         </Row>
                       );
                     })}
-                    <div id="favoritePlease">Play your less frequent category picks for a score boost!.</div>
+                    <div id="favoritePlease">Play your less frequent category picks for a score boost!</div>
                   </React.Fragment>
                 ) : (
                   "You have not played any quiz yet"

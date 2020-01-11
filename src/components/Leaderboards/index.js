@@ -42,7 +42,7 @@ const Leaderboards = props => {
   return (
     <Row gutter={15}>
       <Col xs={24} md={12} lg={8} xl={6}>
-        <Card className="top10" title=" Top 10 players all time">
+        <Card className="top10" title=" Top 10 players of all time">
           <div className="leaderboard-card-body">
             {!isLoaded(props.top10) ? (
               <Spin />

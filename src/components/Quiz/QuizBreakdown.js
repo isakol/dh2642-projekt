@@ -15,6 +15,8 @@ const QuizBreakdown = props => {
           <div>
             Correct answers:{" "}
             {correctNo + "/" + noOfQuestions + " (" + clearRate + "%)"}
+            {correctNo == noOfQuestions ? (<div>Clean Sweep! Get Bonus!</div>)
+            : correctNo == 0 ? (<div>Come on, you can do better than that!</div>) : (null)}
           </div>
           <div>Points gained: {props.score}</div>
         </React.Fragment>
