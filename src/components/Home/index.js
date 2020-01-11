@@ -57,7 +57,7 @@ class Home extends Component {
 
     return (
       <React.Fragment>
-        <Card><div>Welcome home, {this.props.auth.displayName}!</div></Card>
+        <Card><div>Welcome home, {this.props.auth.displayName !== "undefined" ?(this.props.auth.displayName) : ("user")}!</div></Card>
         <Row gutter={30}>
           <Col span={8}>
             <Card title="Correct answers">
@@ -105,9 +105,7 @@ class Home extends Component {
                           <Col className="favorite-left" span={21}>
                             {c.name}
                           </Col>
-                          <Col className="favorite-right" span={3}>
-                            {c.times}
-                          </Col>
+                          
                         </Row>
                       );
                     })}
