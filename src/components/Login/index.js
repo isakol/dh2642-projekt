@@ -98,14 +98,14 @@ class Login extends Component {
               <Input type="email" value={this.state.email} placeholder="E-mail address" onChange={this.emailChange} />
             </Form.Item>
 
-            <Form.Item
+            {this.state.newUser ? (<Form.Item
               label="Username"
               labelAlign="left"
               validateStatus={(this.state.errors.emptyUsername || this.state.errors.invalidUsername) ? "error" : null}
               help={this.state.errors.emptyUsername ? "Please enter a username" : this.state.invalidUsername ? "Please enter a different username" : null}
             >
               <Input type="username" value={this.state.username} placeholder="Username" onChange={this.usernameChange} />
-            </Form.Item>
+            </Form.Item>) : null}
 
             <Form.Item
               label="Password"
@@ -141,7 +141,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     signup: (email, username, password) => dispatch(signup(email, username, password)),
-    signin: (email, username, password, callback) => dispatch(signin(email, username, password, callback)),
+    signin: (email, password, callback) => dispatch(signin(email, password, callback)),
   };
 }
 

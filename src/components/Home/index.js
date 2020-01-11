@@ -57,7 +57,7 @@ class Home extends Component {
 
     return (
       <React.Fragment>
-        <Card><div>Welcome home, {this.props.auth.displayName !== "undefined" && this.props.auth.displayName !== null ?(this.props.auth.displayName) : "user"}!</div></Card>
+        <Card><div>Welcome home, {this.props.profile.displayName !== "undefined" && this.props.profile.displayName !== null ?(this.props.profile.displayName) : "user"}!</div></Card>
         <Row gutter={30}>
           <Col span={8}>
             <Card title="Correct answers">
@@ -174,7 +174,6 @@ class Home extends Component {
 function mapStateToProps(state) {
   return {
     profile: state.firebaseReducer.profile,
-    auth: state.firebaseReducer.auth,
     cats: state.categoryReducer.categories,
     categoryStatus: state.categoryReducer.status,
     categoryMessage: state.categoryReducer.message

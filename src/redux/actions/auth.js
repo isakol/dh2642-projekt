@@ -11,14 +11,15 @@ import {
   SIGNOUT_ERROR
 } from "../constants";
 
-export const signup = (email, password) => async dispatch => {
+export const signup = (email, username, password) => async dispatch => {
   dispatch(startLoading());
 
   firebase.auth().createUserWithEmailAndPassword(email, password)
   .then(() => {
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
-        firebase.ref("users/" + user.uid).update({points: 0});
+        firebase.ref("users/" + user.uid).update({points: 0, displayName: username});
+        user.updateProfile({displayName: username});
         dispatch({type: SIGNUP_SUCCESS});
       } else {
         dispatch({type: SIGNIN_ERROR, message:"Your account has been created but we could not sign you in. Please try doing so manually"});
