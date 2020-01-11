@@ -34,7 +34,8 @@ const enhance = compose(
     }
   ]),
   connect(state => ({
-    top10: state.firebaseReducer.ordered.top10
+    top10: state.firebaseReducer.ordered.top10,
+    auth: state.firebaseReducer.auth
   }))
 );
 
@@ -52,8 +53,9 @@ const Leaderboards = props => {
                   <div className="a-player" key={i}>
                     <div className="player-no">{i + 1}.</div>
                     <div className="player-name">
-                      {"displayName" in player.value
-                        ? player.value.displayName
+                      {"displayName" in player.value && player.value.displayName == props.auth.displayName
+                        ? (player.value.displayName + " (you)")
+                        : "displayName" in player.value ? player.value.displayName
                         : player.key}
                       {i == 0 ? (
                         <span> &#129351;</span>
