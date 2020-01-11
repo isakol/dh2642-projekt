@@ -106,6 +106,9 @@ class Quiz extends Component {
               time = time + question.timeLeft;
             }
           });
+          if(points == 100){
+            points += 50;
+          }
           points = Math.round((points + time / 100) * weighting);
           this.setState({ score: points, finished: true }, () => {
             this.props.updateCategoryPreferences(
