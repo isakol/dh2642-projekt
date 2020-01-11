@@ -1,0 +1,36 @@
+.landing-header {
+  background-color: #1890ff;
+  margin:-20px -50px 0 -50px;
+  padding: 100px;
+  text-align:center;
+  color:#FFFFFF;
+}
+
+.landing-header h1 {
+  font-size:36px;
+  color:#FFFFFF;
+}
+
+.landing-header p {
+  font-size:16px;
+}
+
+.landing-section-1 {
+  padding-top:50px;
+}
+.landing-section-1 .ant-card {
+  margin-bottom:50px;
+}
+
+.landing-section-1 .ant-card-body {
+  text-align:center;
+}
+
+.landing-section-1 .ant-card-body p {
+  min-height:42px;
+}
+
+.landing-icon {
+  font-size: 36px;
+  color:black;
+}

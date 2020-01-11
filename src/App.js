@@ -12,7 +12,8 @@ import Footer from "./components/Layout/Footer";
 import SelectCategory from "./components/NewQuiz/SelectCategory";
 import SelectDifficulty from "./components/NewQuiz/SelectDifficulty";
 import Settings from "./components/Settings";
-import Home from "./components/Home"
+import Home from "./components/Home";
+import Landing from "./components/Landing";
 
 const { Content } = Layout;
 
@@ -24,7 +25,7 @@ const App = (props) => {
             <Header/>
             <Content>
               <Switch>
-                <Route exact path="/">{!props.auth.isEmpty ? <RequireAuth><Home /></RequireAuth> : <div>Welcome to our project site</div>}</Route>
+                <Route exact path="/">{!props.auth.isEmpty ? <RequireAuth><Home /></RequireAuth> : <Landing />}</Route>
                 <Route path="/leaderboards" component={Leaderboards} />
                 <Route exact path="/new-quiz/:id" render={(props) => <RequireAuth><SelectDifficulty match={props.match} /></RequireAuth>} />
                 <Route exact path="/new-quiz"><RequireAuth><SelectCategory /></RequireAuth></Route>
