@@ -9,6 +9,7 @@ import { get_categories } from "../../redux/actions/categories";
 import {
   updateScore,
   updateCategoryPreferences,
+  updateCategoryScore,
   updateHistory
 } from "../../redux/actions/userData";
 
@@ -119,6 +120,7 @@ class Quiz extends Component {
               this.state.answers.length
             );
             this.props.updateScore(points);
+            this.props.updateCategoryScore(this.props.match.params.id, points);
             this.props.updateHistory(
               this.props.match.params.id,
               this.props.match.params.difficulty,
@@ -165,15 +167,14 @@ class Quiz extends Component {
       .then(response => {
         if (response.ok) {
           response.json().then(questions => {
-            console.log(questions);
             if (questions.response_code == 0) {
+              //shuffle questions
               for (let i = questions.results.length - 1; i > 0; i--) {
                 let j = Math.floor(Math.random() * (i + 1));
                 let temp = questions.results[i];
                 questions.results[i] = questions.results[j];
                 questions.results[j] = temp;
-            }
-            console.log(questions.results);
+              }
               questions.results.map(q => {
                 q.alternatives = q.incorrect_answers;
                 q.alternatives.push(q.correct_answer);
@@ -304,6 +305,8 @@ function mapDispatchToProps(dispatch) {
     updateScore: score => dispatch(updateScore(score)),
     updateCategoryPreferences: (categoryId, score, correct, answered) =>
       dispatch(updateCategoryPreferences(categoryId, score, correct, answered)),
+    updateCategoryScore: (categoryId, score) =>
+      dispatch(updateCategoryScore(categoryId, score)),
     updateHistory: (categoryId, difficulty, score, correct, answered) =>
       dispatch(updateHistory(categoryId, difficulty, score, correct, answered))
   };

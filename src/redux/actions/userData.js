@@ -66,6 +66,39 @@ export const updateScore = score => async dispatch => {
   });
 };
 
+export const updateCategoryScore = (
+  categoryId,
+  score
+  ) => async dispatch => {
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        firebase
+        .database()
+        .ref("categories/" + categoryId + "/user" + user.uid)
+        .transaction(data => {
+          if (data != null) {
+            data.points == null
+              ? (data.points = score)
+              : (data.points += score);
+            data.displayName == null
+              ? (data.displayName = user.auth.displayName)
+              : data.displayName != user.auth.displayName ?
+               (data.displayName = user.auth.displayName) :
+               (data.displayName = data.displayName)
+          } else {
+            data = {
+              points: score,
+              displayName: user.auth.displayName
+            };
+          }
+          return data;
+        });
+      } else {
+      // No user is signed in.
+    }
+  });
+};
+
 export const updateCategoryPreferences = (
   categoryId,
   score,
