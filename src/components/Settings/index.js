@@ -9,7 +9,8 @@ const Settings = (props) => {
 
   const [displayName, setDisplayName] = useState(props.auth.displayName);
   const [msgDisplay, setMsgDisplay] = useState(false);
-  const userMessage = {status: "", message: ""};
+  const [status, setStatus] = useState("");
+  const [message, setMessage] = useState("");
 
   const submitForm = (e) => {
     e.preventDefault();
@@ -24,16 +25,16 @@ const Settings = (props) => {
         if (displayName != props.auth.displayName) {
           props.firebase.updateAuth({displayName: displayName});
           props.firebase.updateProfile({displayName: displayName});
-          userMessage.status = "success";
+          setStatus("success")
           setMsgDisplay(true);
         }
       } else {
-        userMessage.status = "error";
-        userMessage.message = "This username is already in use.";
+        setStatus("error")
+        setMessage("This username is already in use.");
         setMsgDisplay(true);
       }
       //this.setState({ loading: false });
-    })   
+    })
   }
 
   useEffect(() => {
@@ -44,7 +45,7 @@ const Settings = (props) => {
     <React.Fragment>
       {
         msgDisplay == true ?
-          userMessage.status == "success" ? <Alert className="settings-alert" message="We successfully updated your information" type="success" /> : userMessage.status == "error" ? <Alert className="settings-alert" message={userMessage.message} type="error" /> : null
+          status == "success" ? <Alert className="settings-alert" message="We successfully updated your information" type="success" /> : status == "error" ? <Alert className="settings-alert" message={message} type="error" /> : null
         :
           null
       }
