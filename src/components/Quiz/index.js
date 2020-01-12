@@ -165,7 +165,15 @@ class Quiz extends Component {
       .then(response => {
         if (response.ok) {
           response.json().then(questions => {
+            console.log(questions);
             if (questions.response_code == 0) {
+              for (let i = questions.results.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                let temp = questions.results[i];
+                questions.results[i] = questions.results[j];
+                questions.results[j] = temp;
+            }
+            console.log(questions.results);
               questions.results.map(q => {
                 q.alternatives = q.incorrect_answers;
                 q.alternatives.push(q.correct_answer);
