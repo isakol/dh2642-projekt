@@ -9,14 +9,31 @@ const Settings = (props) => {
 
   const [displayName, setDisplayName] = useState(props.auth.displayName);
   const [msgDisplay, setMsgDisplay] = useState(false);
+  const userMessage = {status: "", message: ""};
 
   const submitForm = (e) => {
     e.preventDefault();
-    if (displayName != props.auth.displayName) {
-      props.firebase.updateAuth({displayName: displayName});
-      props.firebase.updateProfile({displayName: displayName});
-      setMsgDisplay(true);
-    }
+    //this.setState({ loading: true });
+    props.firebase
+    .ref("users")
+    .orderByChild("displayName")
+    .equalTo(displayName)
+    .limitToFirst(1)
+    .once("value", snapshot => {
+      if (!snapshot.exists()) {
+        if (displayName != props.auth.displayName) {
+          props.firebase.updateAuth({displayName: displayName});
+          props.firebase.updateProfile({displayName: displayName});
+          userMessage.status = "success";
+          setMsgDisplay(true);
+        }
+      } else {
+        userMessage.status = "error";
+        userMessage.message = "This username is already in use.";
+        setMsgDisplay(true);
+      }
+      //this.setState({ loading: false });
+    })   
   }
 
   useEffect(() => {
@@ -27,7 +44,7 @@ const Settings = (props) => {
     <React.Fragment>
       {
         msgDisplay == true ?
-          props.status == "success" ? <Alert className="settings-alert" message="We successfully updated your information" type="success" /> : props.status == "error" ? <Alert className="settings-alert" message={props.message} type="error" /> : null
+          userMessage.status == "success" ? <Alert className="settings-alert" message="We successfully updated your information" type="success" /> : userMessage.status == "error" ? <Alert className="settings-alert" message={userMessage.message} type="error" /> : null
         :
           null
       }
@@ -68,6 +85,7 @@ function mapStateToProps(state) {
   console.log(state);
   return {
     auth: state.firebaseReducer.auth,
+    profile: state.firebaseReducer.profile
     //status: state.settingsReducer.status,
     //message: state.settingsReducer.message
   };
