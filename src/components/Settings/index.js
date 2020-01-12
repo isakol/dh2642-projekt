@@ -2,7 +2,6 @@ import React, {useState, useEffect} from "react";
 import { Col, Row, Form, Upload, Button, Input, Icon, PageHeader, Alert} from 'antd';
 import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
-import {updateUserInfo} from "../../redux/actions/user.js";
 import { withFirebase } from 'react-redux-firebase';
 import "./Settings.css";
 

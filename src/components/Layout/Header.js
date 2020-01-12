@@ -2,8 +2,8 @@ import React from "react";
 import { Layout, Col, Row, Button, Dropdown, Menu, Icon, Tag } from "antd";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import { signout } from "../../redux/actions/auth";
 import { withRouter } from "react-router-dom";
+import { withFirebase } from "react-redux-firebase";
 import "./Header.css";
 
 const { Header } = Layout;
@@ -48,7 +48,11 @@ const LayoutHeader = props => {
                       </Link>
                     </Menu.Item>
                     <Menu.Item
-                      onClick={props.signoutClick}
+                      onClick={() => {
+                        props.firebase.logout().then(() => {
+                          props.history.push("/");
+                        });
+                      }}
                       className="logout-button"
                       key="3"
                     >
@@ -95,7 +99,14 @@ const LayoutHeader = props => {
                     <Menu.Item key="3">
                       <Link to="/settings">Settings</Link>
                     </Menu.Item>
-                    <Menu.Item key="4" onClick={props.signoutClick}>
+                    <Menu.Item
+                      key="4"
+                      onClick={() => {
+                        props.firebase.logout().then(() => {
+                          props.history.push("/");
+                        });
+                      }}
+                    >
                       Sign out
                     </Menu.Item>
                   </React.Fragment>
@@ -124,12 +135,4 @@ function mapStateToProps(state) {
   };
 }
 
-function mapDispatchToProps(dispatch, props) {
-  return {
-    signoutClick: () => dispatch(signout(props.history))
-  };
-}
-
-export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(LayoutHeader)
-);
+export default withFirebase(withRouter(connect(mapStateToProps)(LayoutHeader)));
