@@ -103,7 +103,7 @@ class Quiz extends Component {
                 categories: {
                   ...this.props.profile.categories,
                   [this.props.match.params.id]:
-                    typeof this.props.profile.categories[this.props.match.params.id] !== "undefined"
+                    (typeof this.props.profile.categories !== "undefined" && typeof this.props.profile.categories[this.props.match.params.id] !== "undefined")
                       ? {
                           answered: this.props.profile.categories[this.props.match.params.id].answered + this.state.answers.length,
                           correct: this.props.profile.categories[this.props.match.params.id].correct + noOfCorrectAnswers,
@@ -121,29 +121,46 @@ class Quiz extends Component {
               .then(() => {
                 //add score to leaderboards
                 this.props.firebase
-                .ref("leaderboards/categories")
-                .child(this.props.match.params.id)
-                .orderByChild("uid")
-                .equalTo(this.props.auth.uid)
-                .on("value", snapshot => {
-                  console.log(snapshot.val());
+                .ref("leaderboards")
+                .orderByChild("id")
+                .equalTo(parseInt(this.props.match.params.id))
+                .once("value", snapshot => {
+                  let userAlreadyInLeaderboard = false;
+                  let leaderboardFull = false;
+
                   snapshot.forEach( data => {
-                    if(data.val().points > oldPoints){
-                      oldPoints = data.val().points;
-                      data.ref.remove();
+                    if(data.val().uid === this.props.auth.uid) {
+                      this.props.firebase.update("leaderboards/"+data.key, {points: data.val().points+points});
+                      userAlreadyInLeaderboard = true;
                     }
                   });
-                  //snapshot.ref.remove();
+
+                  if (!userAlreadyInLeaderboard) {
+                    if (snapshot.numChildren() >= 5) {
+
+                      let lowestKey = Object.keys(snapshot.val()).sort((a,b) => snapshot.val()[b].points - snapshot.val()[a].points).slice(-1)[0];
+                      if (points > snapshot.val()[lowestKey].points) {
+                        console.log(lowestKey);
+                          this.props.firebase.update("leaderboards/"+lowestKey, {});
+                          this.props.firebase.push("leaderboards/", {
+                            id: parseInt(this.props.match.params.id),
+                            displayName: this.props.profile.displayName,
+                            points: oldPoints + points,
+                            uid: this.props.auth.uid
+                          });
+                      }
+                    } else {
+                      this.props.firebase.push("leaderboards/", {
+                        id: parseInt(this.props.match.params.id),
+                        displayName: this.props.profile.displayName,
+                        points: oldPoints + points,
+                        uid: this.props.auth.uid
+                      });
+                    }
+                  }
+
               });
-            }).then(() =>{
-                //if()
-                this.props.firebase.push("leaderboards/categories/" + this.props.match.params.id, {
-                  displayName: this.props.auth.displayName,
-                  points: oldPoints + points,
-                  uid: this.props.auth.uid
-                });
-              });
-            //this.props.updateCategoryScore(this.props.match.params.id, points);
+            });
 
             //remove oldest activity if user already has 5 entries in history
             if (typeof this.props.profile.history !== "undefined" && Object.keys(this.props.profile.history).length >= 5) {
@@ -176,7 +193,7 @@ class Quiz extends Component {
             questionNo: this.state.questionNo + 1,
             correctOrIncorrect: null
           });
-        }, 1750);
+        }, 50);
       }
     }
   }
