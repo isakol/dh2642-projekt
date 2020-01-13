@@ -33,7 +33,7 @@ const enhance = compose(
       queryParams: ["orderByChild=points", "limitToLast=15"]
     },
     {
-      path: "leaderboards/categories",
+      path: "leaderboards",
       storeAs: "topOfCats"
     }
   ]),
@@ -41,6 +41,23 @@ const enhance = compose(
 );
 
 const Leaderboards = props => {
+  console.log(props.topOfCats);
+  let transArr = [];
+  const topArr = [];
+  if(typeof props.topOfCats != "undefined"){
+    let keys = Object.keys(props.topOfCats);
+    let n = keys.length;
+    for(let i = 0; i<n; i++){
+      let key = keys[i];
+      transArr[key] = props.topOfCats[key];
+    }
+    topArr = transArr.reduce((acc, curr) => {
+      if(!acc[curr.id]) acc[curr.id] = []; //If this type wasn't previously stored
+      acc[curr.id].push(curr);
+      return acc;
+    },{});
+    console.log(topArr);
+  }
   //if categories has not been loaded yet from the API this session, do it
   useEffect(() => {
     if (!props.cats.length > 0) props.get_categories();
@@ -80,11 +97,11 @@ const Leaderboards = props => {
       <Col className="leaderboard-right" xs={24} md={12} lg={16} xl={18}>
         <Row gutter={20}>
           {typeof props.topOfCats !== "undefined" && props.cats.length > 0 && props.categoryStatus === "success" ? (
-            props.topOfCats.map((c, i) => {
-              let findCategory = props.cats.find(cat => cat.id == c.key);
+            topArr.map((c, i) => {
+              let findCategory = props.cats.find(cat => cat.id == c.id);
               return typeof findCategory !== null ? (
                 <Col key={i} xs={24} md={24} lg={12} xl={8}>
-                  <Card className="category-card" title={findCategory.name} extra={<Link to={"/new-quiz/" + c.key}>Take quiz</Link>}>
+                  <Card className="category-card" title={findCategory.name} extra={<Link to={"/new-quiz/" + c.id}>Take quiz</Link>}>
                     <div className="leaderboard-card-body">
                       {Object.keys(c.value)
                         .sort((a, b) => c.value[b].points - c.value[a].points)

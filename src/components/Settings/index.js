@@ -25,16 +25,29 @@ const Settings = (props) => {
         if (displayName !== props.auth.displayName) {
           props.firebase.updateAuth({displayName: displayName});
           props.firebase.updateProfile({displayName: displayName});
+          props.firebase
+          .ref("leaderboards")
+          .orderByChild("uid")
+          .equalTo(props.auth.uid)
+          .once("value", snapshot2 => {
+          if (snapshot2.exists()) {
+            snapshot2.forEach( data => {
+              if(data.val().uid === props.auth.uid) {
+                props.firebase.update("leaderboards/"+data.key, {displayName: displayName});
+              }
+            });
+          }
           setStatus("success")
           setMsgDisplay(true);
+        });
+        } else {
+          setStatus("error")
+          setMessage("This username is already in use.");
+          setMsgDisplay(true);
         }
-      } else {
-        setStatus("error")
-        setMessage("This username is already in use.");
-        setMsgDisplay(true);
-      }
       //this.setState({ loading: false });
-    })
+      }
+    });
   }
 
   useEffect(() => {
