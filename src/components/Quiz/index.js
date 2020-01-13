@@ -94,6 +94,7 @@ class Quiz extends Component {
           }
           points = Math.round((points + time / 100) * weighting);
           const noOfCorrectAnswers = this.state.answers.filter(a => a.answer == a.correct_answer).length;
+          let oldPoints = 0;
           this.setState({ score: points, finished: true }, () => {
             //update users points and add user stats for played category
             this.props.firebase
@@ -119,9 +120,26 @@ class Quiz extends Component {
               })
               .then(() => {
                 //add score to leaderboards
+                this.props.firebase
+                .ref("leaderboards/categories")
+                .child(this.props.match.params.id)
+                .orderByChild("uid")
+                .equalTo(this.props.auth.uid)
+                .on("value", snapshot => {
+                  console.log(snapshot.val());
+                  snapshot.forEach( data => {
+                    if(data.val().points > oldPoints){
+                      oldPoints = data.val().points;
+                      data.ref.remove();
+                    }
+                  });
+                  //snapshot.ref.remove();
+              });
+            }).then(() =>{
+                //if()
                 this.props.firebase.push("leaderboards/categories/" + this.props.match.params.id, {
                   displayName: this.props.auth.displayName,
-                  points: this.props.profile.categories[this.props.match.params.id].points + points,
+                  points: oldPoints + points,
                   uid: this.props.auth.uid
                 });
               });
