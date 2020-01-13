@@ -6,24 +6,15 @@ import { connect } from "react-redux";
 import { compose } from "redux";
 import { firebaseConnect, isLoaded, isEmpty } from "react-redux-firebase";
 
-const cats = [
-  {
-    id: 2,
-    name: "Music",
-    players: [
-      { name: "music player 1", points: 5300 },
-      { name: "musicc 2", points: 1903 }
-    ]
-  },
-  {
-    id: 3,
-    name: "General knowledge",
-    players: [
-      { name: "quizmaster", points: 7777 },
-      { name: "general", points: 6666 }
-    ]
-  }
-];
+
+const cats = [{id: 9, name: "General Knowledge"},{id: 10, name: "Entertainment: Books"},{id: 11, name: "Entertainment: Film"},
+{id: 12, name: "Entertainment: Music"},{id: 13, name: "Entertainment: Musicals & Theatres"},{id: 14, name: "Entertainment: Television"},
+{id: 15, name: "Entertainment: Video Games"},{id: 16, name: "Entertainment: Board Games"},{id: 17, name: "Science & Nature"},
+{id: 18, name: "Science: Computers"},{id: 19, name: "Science: Mathematics"},{id: 20, name: "Mythology"},{id: 21, name: "Sports"},
+{id: 22, name: "Geography"},{id: 23, name: "History"},{id: 24, name: "Politics"},{id: 25, name: "Art"},{id: 26, name: "Celebrities"},
+{id: 27, name: "Animals"},{id: 28, name: "Vehicles"},{id: 29, name: "Entertainment: Comics"},{id: 30, name: "Science: Gadgets"},
+{id: 31, name: "Entertainment: Japanese Anime & Manga"},{id: 32, name: "Entertainment: Cartoon & Animations"}];
+  
 
 const enhance = compose(
   firebaseConnect(props => [
@@ -31,10 +22,16 @@ const enhance = compose(
       path: "users",
       storeAs: "top10",
       queryParams: ["orderByChild=points", "limitToLast=10"]
+    },
+    {
+      path: "leaderboards",
+      storeAs: "topOfCats",
+      queryParams: ["orderByValue"]
     }
   ]),
   connect(state => ({
     top10: state.firebaseReducer.ordered.top10,
+    topOfCats: state.firebaseReducer.ordered.topOfCats,
     profile: state.firebaseReducer.profile
   }))
 );
@@ -83,12 +80,16 @@ const Leaderboards = props => {
               extra={<Link to={"/new-quiz/" + cat.id}>Take quiz</Link>}
             >
               <div className="leaderboard-card-body">
-                {cat.players.map((player, i) => {
+                {!isLoaded(props.topOfCats) ? (
+                  <Spin />
+                ) : !isEmpty(props.topOfCats) ? (
+                  [...props.topOfCats].find(e => e.value == cat.id).map((player, i) => {
+                //cat.players.map((player, i) => {
                   return (
                     <div className="a-player" key={i}>
                       <div className="player-no">{i + 1}.</div>
                       <div className="player-name">
-                        {player.name}
+                        {player.value.Object.key.displayName}
                         {i == 0 ? (
                           <span> &#129351;</span>
                         ) : i == 1 ? (
@@ -99,7 +100,8 @@ const Leaderboards = props => {
                       </div>
                     </div>
                   );
-                })}
+                })
+              ): null}
               </div>
             </Card>
           </Col>
