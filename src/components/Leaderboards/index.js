@@ -50,7 +50,7 @@ const Leaderboards = props => {
             ) : !isEmpty(props.top10) ? (
               [...props.top10].reverse().map((player, i) => {
                 return (
-                  <div className="a-player" key={i}>
+                  <div className={"displayName" in player.value && player.value.displayName == props.profile.displayName ? "a-player you" : "a-player"} key={i}>
                     <div className="player-no">{i + 1}.</div>
                     <div className="player-name">
                       {"displayName" in player.value && player.value.displayName == props.profile.displayName
