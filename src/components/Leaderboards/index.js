@@ -41,31 +41,34 @@ const enhance = compose(
 );
 
 const Leaderboards = props => {
-  console.log(props.topOfCats);
-  let transArr = [];
-  const topArr = [];
-  if(typeof props.topOfCats != "undefined"){
-    let keys = Object.keys(props.topOfCats);
-    let n = keys.length;
-    for(let i = 0; i<n; i++){
-      let key = keys[i];
-      transArr[key] = props.topOfCats[key];
-    }
-    topArr = transArr.reduce((acc, curr) => {
-      if(!acc[curr.id]) acc[curr.id] = []; //If this type wasn't previously stored
-      acc[curr.id].push(curr);
-      return acc;
-    },{});
-    console.log(topArr);
-  }
+  let leaderboardObj = {};
+
   //if categories has not been loaded yet from the API this session, do it
   useEffect(() => {
     if (!props.cats.length > 0) props.get_categories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  //turn result object from firebase into an array that we can map
+  if (typeof props.topOfCats !== "undefined") {
+    Object.keys(props.topOfCats).forEach((k, i) => {
+      let currentId = props.topOfCats[k].value.id;
+      if (typeof leaderboardObj[currentId] === "undefined") {
+        leaderboardObj[currentId] = [
+          { points: props.topOfCats[k].value.points, displayName: props.topOfCats[k].value.displayName, uid: props.topOfCats[k].value.uid }
+        ];
+      } else {
+        leaderboardObj[currentId].push({
+          points: props.topOfCats[k].value.points,
+          displayName: props.topOfCats[k].value.displayName,
+          uid: props.topOfCats[k].value.uid
+        });
+      }
+    });
+  }
 
   return (
     <Row gutter={20}>
-
       {props.categoryStatus === "error" && <Alert type="error" message={props.categoryMessage} />}
 
       <Col xs={24} md={12} lg={8} xl={6}>
@@ -81,7 +84,22 @@ const Leaderboards = props => {
                     <div className="player-name">
                       {"displayName" in player.value ? player.value.displayName : player.key}
                       {player.key === props.auth.uid && " (you)"}
-                      {i == 0 ? <span> &#129351;</span> : i == 1 ? <span> &#129352;</span> : i == 2 ? <span> &#129353;</span> : null}
+                      {i === 0 ? (
+                        <span role="img" aria-label="gold">
+                          {" "}
+                          &#129351;
+                        </span>
+                      ) : i === 1 ? (
+                        <span role="img" aria-label="silver">
+                          {" "}
+                          &#129352;
+                        </span>
+                      ) : i === 2 ? (
+                        <span role="img" aria-label="bronze">
+                          {" "}
+                          &#129353;
+                        </span>
+                      ) : null}
                     </div>
                     <div>{player.value.points}</div>
                   </div>
@@ -96,32 +114,49 @@ const Leaderboards = props => {
 
       <Col className="leaderboard-right" xs={24} md={12} lg={16} xl={18}>
         <Row gutter={20}>
-          {typeof props.topOfCats !== "undefined" && props.cats.length > 0 && props.categoryStatus === "success" ? (
-            topArr.map((c, i) => {
-              let findCategory = props.cats.find(cat => cat.id == c.id);
-              return typeof findCategory !== null ? (
-                <Col key={i} xs={24} md={24} lg={12} xl={8}>
-                  <Card className="category-card" title={findCategory.name} extra={<Link to={"/new-quiz/" + c.id}>Take quiz</Link>}>
-                    <div className="leaderboard-card-body">
-                      {Object.keys(c.value)
-                        .sort((a, b) => c.value[b].points - c.value[a].points)
-                        .map((p, j) => {
-                          return (
-                            <div className={c.value[p].uid === props.auth.uid ? "a-player you" : "a-player"} key={j}>
-                              <div className="player-no">{j + 1}.</div>
-                              <div className="player-name">
-                                {c.value[p].displayName}
-                                {c.value[p].uid === props.auth.uid && " (you)"}
-                                {j == 0 ? <span> &#129351;</span> : j == 1 ? <span> &#129352;</span> : j == 2 ? <span> &#129353;</span> : null}
+          {typeof props.topOfCats !== "undefined" && props.cats.length > 0 && props.categoryStatus === "success" && leaderboardObj !== {} ? (
+            Object.keys(leaderboardObj).map((c, i) => {
+              let findCategory = props.cats.find(cat => cat.id === parseInt(c));
+              return (
+                findCategory !== undefined && (
+                  <Col key={i} xs={24} md={24} lg={12} xl={8}>
+                    <Card className="category-card" title={findCategory.name} extra={<Link to={"/new-quiz/" + c.id}>Take quiz</Link>}>
+                      <div className="leaderboard-card-body">
+                        {leaderboardObj[c]
+                          .sort((a, b) => b.points - a.points)
+                          .map((p, j) => {
+                            return (
+                              <div key={j} className={p.uid === props.auth.uid ? "a-player you" : "a-player"}>
+                                <div className="player-no">{j + 1}.</div>
+                                <div className="player-name">
+                                  {p.displayName}
+                                  {p.uid === props.auth.uid && " (you)"}
+                                  {j === 0 ? (
+                                    <span role="img" aria-label="gold">
+                                      {" "}
+                                      &#129351;
+                                    </span>
+                                  ) : j === 1 ? (
+                                    <span role="img" aria-label="silver">
+                                      {" "}
+                                      &#129352;
+                                    </span>
+                                  ) : j === 2 ? (
+                                    <span role="img" aria-label="bronze">
+                                      {" "}
+                                      &#129353;
+                                    </span>
+                                  ) : null}
+                                </div>
+                                <div>{p.points}</div>
                               </div>
-                              <div>{c.value[p].points}</div>
-                            </div>
-                          );
-                        })}
-                    </div>
-                  </Card>
-                </Col>
-              ) : null;
+                            );
+                          })}
+                      </div>
+                    </Card>
+                  </Col>
+                )
+              );
             })
           ) : (
             <React.Fragment>
