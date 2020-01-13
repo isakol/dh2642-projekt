@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { get_categories } from "../../redux/actions/categories";
+import { getCategories } from "../../redux/actions/categories";
 import { Row, Col, Alert, Card, Progress, Skeleton, List } from "antd";
 import "./Home.css";
 
@@ -8,7 +8,7 @@ class Home extends Component {
 
   componentDidMount() {
     if (this.props.cats.length === 0) {
-      this.props.get_categories();
+      this.props.getCategories();
     }
   }
 
@@ -178,7 +178,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    get_categories: () => dispatch(get_categories())
+    getCategories: () => dispatch(getCategories())
   };
 }
 

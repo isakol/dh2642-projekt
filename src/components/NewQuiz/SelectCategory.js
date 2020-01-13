@@ -3,13 +3,13 @@ import {Row, Col, Button, Spin} from "antd";
 import {Link} from "react-router-dom";
 import { connect } from "react-redux";
 import "./SelectCategory.css"
-import {get_categories} from "../../redux/actions/categories";
+import {getCategories} from "../../redux/actions/categories";
 
 class SelectCategory extends Component {
 
   componentDidMount() {
     if (this.props.cats.length === 0) {
-      this.props.get_categories();
+      this.props.getCategories();
     }
   }
 
@@ -40,7 +40,7 @@ class SelectCategory extends Component {
 
 function mapDispatchToProps(dispatch) {
   return {
-    get_categories: () => dispatch(get_categories())
+    getCategories: () => dispatch(getCategories())
   }
 }
 

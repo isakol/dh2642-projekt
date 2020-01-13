@@ -5,7 +5,7 @@ import QuizStart from "./QuizStart";
 import { Spin } from "antd";
 import "./Quiz.css";
 import { connect } from "react-redux";
-import { get_categories } from "../../redux/actions/categories";
+import { getCategories } from "../../redux/actions/categories";
 import { withFirebase } from "react-redux-firebase";
 
 class Quiz extends Component {
@@ -30,7 +30,7 @@ class Quiz extends Component {
   }
 
   startClick() {
-    if (this.state.status == "success") {
+    if (this.state.status === "success") {
       this.setState({ started: true });
       this.interval = setInterval(() => {
         if (!this.state.paused) {
@@ -54,7 +54,7 @@ class Quiz extends Component {
           timeLeft: this.state.timeLeft
         }),
         correctOrIncorrect: {
-          correct: this.state.questions[this.state.questionNo].correct_answer == answer,
+          correct: this.state.questions[this.state.questionNo].correct_answer === answer,
           correct_answer: this.state.questions[this.state.questionNo].correct_answer
         }
       });
@@ -84,16 +84,16 @@ class Quiz extends Component {
           }
 
           this.state.answers.forEach(question => {
-            if (question.answer == question.correct_answer) {
+            if (question.answer === question.correct_answer) {
               points = points + 10;
               time = time + question.timeLeft;
             }
           });
-          if (points == 100) {
+          if (points === 100) {
             points += 50;
           }
           points = Math.round((points + time / 100) * weighting);
-          const noOfCorrectAnswers = this.state.answers.filter(a => a.answer == a.correct_answer).length;
+          const noOfCorrectAnswers = this.state.answers.filter(a => a.answer === a.correct_answer).length;
           let oldPoints = 0;
           this.setState({ score: points, finished: true }, () => {
             //update users points and add user stats for played category
@@ -126,7 +126,6 @@ class Quiz extends Component {
                 .equalTo(parseInt(this.props.match.params.id))
                 .once("value", snapshot => {
                   let userAlreadyInLeaderboard = false;
-                  let leaderboardFull = false;
 
                   snapshot.forEach( data => {
                     if(data.val().uid === this.props.auth.uid) {
@@ -193,7 +192,7 @@ class Quiz extends Component {
             questionNo: this.state.questionNo + 1,
             correctOrIncorrect: null
           });
-        }, 50);
+        }, 1750);
       }
     }
   }
@@ -221,7 +220,7 @@ class Quiz extends Component {
       .then(response => {
         if (response.ok) {
           response.json().then(questions => {
-            if (questions.response_code == 0) {
+            if (questions.response_code === 0) {
               //shuffle questions
               for (let i = questions.results.length - 1; i > 0; i--) {
                 let j = Math.floor(Math.random() * (i + 1));
@@ -229,7 +228,7 @@ class Quiz extends Component {
                 questions.results[i] = questions.results[j];
                 questions.results[j] = temp;
               }
-              questions.results.map(q => {
+              questions.results.forEach(q => {
                 q.alternatives = q.incorrect_answers;
                 q.alternatives.push(q.correct_answer);
                 //shuffle the alternatives
@@ -243,7 +242,7 @@ class Quiz extends Component {
                 status: "success",
                 questions: questions.results
               });
-            } else if (questions.response_code == 1) {
+            } else if (questions.response_code === 1) {
               this.setState({
                 status: "error",
                 message: "This quiz is under development and does not have enough questions right now."
@@ -269,8 +268,8 @@ class Quiz extends Component {
         });
       });
 
-    if (this.props.cats.length == 0) {
-      this.props.get_categories();
+    if (this.props.cats.length === 0) {
+      this.props.getCategories();
     }
   }
   componentWillUnmount() {
@@ -279,14 +278,14 @@ class Quiz extends Component {
 
   render() {
     let content = "";
-    if (this.props.categoriesStatus == "loading") {
+    if (this.props.categoriesStatus === "loading") {
       content = (
         <div className="difficulty-status">
           <Spin size="large" />
         </div>
       );
-    } else if (this.props.categoriesStatus == "success") {
-      let findCategory = this.props.cats.find(cat => cat.id == this.props.match.params.id);
+    } else if (this.props.categoriesStatus === "success") {
+      let findCategory = this.props.cats.find(cat => cat.id === parseInt(this.props.match.params.id));
 
       if (typeof findCategory === "undefined") {
         content = <div className="quiz-status">The requested category does not exist.</div>;
@@ -338,7 +337,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    get_categories: () => dispatch(get_categories())
+    getCategories: () => dispatch(getCategories())
   };
 }
 

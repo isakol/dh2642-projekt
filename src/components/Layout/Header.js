@@ -14,7 +14,7 @@ const LayoutHeader = props => {
       <Row type="flex" justify="space-between">
         <Col className="header-start">
           <span className="logo">
-            <Link to="/">Quiz App</Link>
+            <Link to="/">Entrivia</Link>
           </span>
           <span className="start-button">
             <Link to="/new-quiz">
@@ -32,11 +32,7 @@ const LayoutHeader = props => {
             ""
           ) : !props.auth.isEmpty ? (
             <React.Fragment>
-              {!props.profile.isLoaded ? (
-                ""
-              ) : !props.profile.isEmpty ? (
-                <Tag color="#87d068">{props.profile.points} points</Tag>
-              ) : null}
+              {!props.profile.isLoaded ? "" : !props.profile.isEmpty ? <Tag color="#87d068">{props.profile.points} points</Tag> : null}
               <Dropdown
                 trigger={["click"]}
                 overlay={
@@ -63,11 +59,7 @@ const LayoutHeader = props => {
               >
                 <span className="header-button-trigger">
                   <Button size="large">
-                    <Icon type="user" />{" "}
-                    {props.profile.displayName != null
-                      ? props.profile.displayName
-                      : props.auth.email}{" "}
-                    <Icon type="down" />
+                    <Icon type="user" /> {props.profile.displayName !== null ? props.profile.displayName : props.auth.email} <Icon type="down" />
                   </Button>
                 </span>
               </Dropdown>

@@ -3,13 +3,13 @@ import {Row, Col, Button, Card, Divider, Icon, Spin} from "antd";
 import {Link} from "react-router-dom";
 import "./SelectDifficulty.css";
 import {connect} from "react-redux";
-import {get_categories} from "../../redux/actions/categories"
+import {getCategories} from "../../redux/actions/categories"
 
 class SelectDifficulty extends Component {
 
   componentDidMount() {
     if (this.props.cats.length === 0) {
-      this.props.get_categories();
+      this.props.getCategories();
     }
   }
 
@@ -57,7 +57,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    get_categories: () => dispatch(get_categories())
+    getCategories: () => dispatch(getCategories())
   }
 }
 

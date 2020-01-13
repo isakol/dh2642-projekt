@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import { firebaseConnect, isLoaded, isEmpty } from "react-redux-firebase";
-import { get_categories } from "../../redux/actions/categories";
+import { getCategories } from "../../redux/actions/categories";
 
 const mapStateToProps = state => {
   return {
@@ -21,7 +21,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    get_categories: () => dispatch(get_categories())
+    getCategories: () => dispatch(getCategories())
   };
 };
 
@@ -45,7 +45,7 @@ const Leaderboards = props => {
 
   //if categories has not been loaded yet from the API this session, do it
   useEffect(() => {
-    if (!props.cats.length > 0) props.get_categories();
+    if (!props.cats.length > 0) props.getCategories();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

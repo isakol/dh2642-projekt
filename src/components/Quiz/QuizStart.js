@@ -1,5 +1,5 @@
 import React from "react";
-import { message, Card, Col, Row, Button, Icon } from "antd";
+import { Card, Button, Icon } from "antd";
 import { Link } from "react-router-dom";
 
 const QuizStart = props => {
@@ -27,7 +27,7 @@ const QuizStart = props => {
           className="start-button"
           shape="round"
           block
-          loading={props.status != "success"}
+          loading={props.status !== "success"}
           onClick={props.startClick}
         >
           Start quiz

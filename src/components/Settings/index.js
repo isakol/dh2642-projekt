@@ -6,49 +6,55 @@ import { withFirebase } from 'react-redux-firebase';
 import "./Settings.css";
 
 const Settings = (props) => {
+  const [displayName, setDisplayName] = useState(props.profile.displayName);
 
-  const [displayName, setDisplayName] = useState(props.auth.displayName);
   const [msgDisplay, setMsgDisplay] = useState(false);
   const [status, setStatus] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const submitForm = (e) => {
     e.preventDefault();
-    //this.setState({ loading: true });
-    props.firebase
-    .ref("users")
-    .orderByChild("displayName")
-    .equalTo(displayName)
-    .limitToFirst(1)
-    .once("value", snapshot => {
-      if (!snapshot.exists()) {
-        if (displayName !== props.auth.displayName) {
-          props.firebase.updateAuth({displayName: displayName});
-          props.firebase.updateProfile({displayName: displayName});
-          props.firebase
-          .ref("leaderboards")
-          .orderByChild("uid")
-          .equalTo(props.auth.uid)
-          .once("value", snapshot2 => {
-          if (snapshot2.exists()) {
-            snapshot2.forEach( data => {
-              if(data.val().uid === props.auth.uid) {
-                props.firebase.update("leaderboards/"+data.key, {displayName: displayName});
-              }
-            });
-          }
-          setStatus("success")
-          setMsgDisplay(true);
-        });
+    if ((displayName !== "" || displayName !== null) && displayName !== props.auth.displayName) {
+      setLoading(true);
+      props.firebase
+      .ref("users")
+      .orderByChild("displayName")
+      .equalTo(displayName)
+      .limitToFirst(1)
+      .once("value", snapshot => {
+        if (!snapshot.exists()) {
+            props.firebase.updateAuth({displayName: displayName});
+            props.firebase.updateProfile({displayName: displayName});
+            props.firebase
+            .ref("leaderboards")
+            .orderByChild("uid")
+            .equalTo(props.auth.uid)
+            .once("value", snapshot2 => {
+            if (snapshot2.exists()) {
+              snapshot2.forEach( data => {
+                if(data.val().uid === props.auth.uid) {
+                  props.firebase.update("leaderboards/"+data.key, {displayName: displayName});
+                }
+              });
+            }
+            setStatus("success")
+            setMsgDisplay(true);
+          });
         } else {
           setStatus("error")
           setMessage("This username is already in use.");
           setMsgDisplay(true);
         }
-      //this.setState({ loading: false });
-      }
-    });
+      }).finally(() => {
+        setLoading(false);
+      });
+    }
   }
+  const oldName = props.profile.displayName;
+  useEffect(() => {
+    setDisplayName(oldName)
+  }, [oldName, setDisplayName]);
 
   useEffect(() => {
     setMsgDisplay(false);
@@ -85,7 +91,7 @@ const Settings = (props) => {
           </Upload>
         </Form.Item>
         <Form.Item wrapperCol={{sm: {offset:6}, md: {offset:5}, lg: {offset:3}, xl: {offset:2}}}>
-          <Button type="primary" htmlType="submit" loading={props.status === "loading"}>
+          <Button type="primary" htmlType="submit" loading={loading}>
             Save changes
           </Button>
         </Form.Item>
@@ -100,8 +106,6 @@ function mapStateToProps(state) {
   return {
     auth: state.firebaseReducer.auth,
     profile: state.firebaseReducer.profile
-    //status: state.settingsReducer.status,
-    //message: state.settingsReducer.message
   };
 }
 
