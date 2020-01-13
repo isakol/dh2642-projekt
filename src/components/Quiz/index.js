@@ -6,16 +6,12 @@ import { Spin } from "antd";
 import "./Quiz.css";
 import { connect } from "react-redux";
 import { get_categories } from "../../redux/actions/categories";
-import {
-  updateScore,
-  updateCategoryPreferences,
-  updateCategoryScore,
-  updateHistory
-} from "../../redux/actions/userData";
+import { withFirebase } from "react-redux-firebase";
 
 class Quiz extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       started: false,
       paused: false,
@@ -54,16 +50,12 @@ class Quiz extends Component {
         answers: this.state.answers.concat({
           question: this.state.questions[this.state.questionNo].question,
           answer: answer,
-          correct_answer: this.state.questions[this.state.questionNo]
-            .correct_answer,
+          correct_answer: this.state.questions[this.state.questionNo].correct_answer,
           timeLeft: this.state.timeLeft
         }),
         correctOrIncorrect: {
-          correct:
-            this.state.questions[this.state.questionNo].correct_answer ==
-            answer,
-          correct_answer: this.state.questions[this.state.questionNo]
-            .correct_answer
+          correct: this.state.questions[this.state.questionNo].correct_answer == answer,
+          correct_answer: this.state.questions[this.state.questionNo].correct_answer
         }
       });
       if (this.state.questionNo >= 9) {
@@ -74,24 +66,14 @@ class Quiz extends Component {
           let time = 0;
           let weighting = 1;
 
-          if (typeof this.props.categoryPreferences !== "undefined") {
-            let catPref = this.props.categoryPreferences;
+          if (typeof this.props.profile.categoryPreferences !== "undefined") {
+            let catPref = this.props.profile.categoryPreferences;
 
-            let mostPlayedCat = Object.keys(catPref).reduce((max, cat) =>
-              max.times > cat.times ? max : cat
-            );
+            let mostPlayedCat = Object.keys(catPref).reduce((max, cat) => (max.times > cat.times ? max : cat));
 
             if (mostPlayedCat !== this.props.match.params.id) {
-              let thisCatTimes =
-                typeof catPref[this.props.match.params.id] !== "undefined"
-                  ? catPref[this.props.match.params.id].times
-                  : 0;
-              weighting =
-                weighting *
-                this.calculateCategoryScaling(
-                  catPref[mostPlayedCat].times,
-                  thisCatTimes
-                );
+              let thisCatTimes = typeof catPref[this.props.match.params.id] !== "undefined" ? catPref[this.props.match.params.id].times : 0;
+              weighting = weighting * this.calculateCategoryScaling(catPref[mostPlayedCat].times, thisCatTimes);
             }
           }
 
@@ -107,28 +89,65 @@ class Quiz extends Component {
               time = time + question.timeLeft;
             }
           });
-          if(points == 100){
+          if (points == 100) {
             points += 50;
           }
           points = Math.round((points + time / 100) * weighting);
+          const noOfCorrectAnswers = this.state.answers.filter(a => a.answer == a.correct_answer).length;
           this.setState({ score: points, finished: true }, () => {
-            this.props.updateCategoryPreferences(
-              this.props.match.params.id,
-              points,
-              this.state.answers.filter(a => a.answer == a.correct_answer)
-                .length,
-              this.state.answers.length
-            );
-            this.props.updateScore(points);
-            this.props.updateCategoryScore(this.props.match.params.id, points);
-            this.props.updateHistory(
-              this.props.match.params.id,
-              this.props.match.params.difficulty,
-              points,
-              this.state.answers.filter(a => a.answer == a.correct_answer)
-                .length,
-              this.state.answers.length
-            );
+            //update users points and add user stats for played category
+            this.props.firebase
+              .updateProfile({
+                points: this.props.profile.points + points,
+                categories: {
+                  ...this.props.profile.categories,
+                  [this.props.match.params.id]:
+                    typeof this.props.profile.categories[this.props.match.params.id] !== "undefined"
+                      ? {
+                          answered: this.props.profile.categories[this.props.match.params.id].answered + this.state.answers.length,
+                          correct: this.props.profile.categories[this.props.match.params.id].correct + noOfCorrectAnswers,
+                          points: this.props.profile.categories[this.props.match.params.id].points + points,
+                          times: this.props.profile.categories[this.props.match.params.id].times + 1
+                        }
+                      : {
+                          answered: this.state.answers.length,
+                          correct: noOfCorrectAnswers,
+                          points: points,
+                          times: 1
+                        }
+                }
+              })
+              .then(() => {
+                //add score to leaderboards
+                this.props.firebase.push("leaderboards/categories/" + this.props.match.params.id, {
+                  displayName: this.props.auth.displayName,
+                  points: this.props.profile.categories[this.props.match.params.id].points + points,
+                  uid: this.props.auth.uid
+                });
+              });
+            //this.props.updateCategoryScore(this.props.match.params.id, points);
+
+            //remove oldest activity if user already has 5 entries in history
+            if (typeof this.props.profile.history !== "undefined" && Object.keys(this.props.profile.history).length >= 5) {
+              this.props.firebase
+                .ref("users/" + this.props.auth.uid)
+                .child("history")
+                .orderByChild("timestamp")
+                .limitToFirst(1)
+                .once("child_added", snapshot => {
+                  snapshot.ref.remove();
+                });
+            }
+
+            //push results to recent activity
+            this.props.firebase.push("users/" + this.props.auth.uid + "/history", {
+              answered: this.state.answers.length,
+              correct: noOfCorrectAnswers,
+              difficulty: this.props.match.params.difficulty,
+              id: this.props.match.params.id,
+              score: points,
+              timestamp: this.props.firebase.database.ServerValue.TIMESTAMP
+            });
           });
         }, 1750);
       } else {
@@ -192,8 +211,7 @@ class Quiz extends Component {
             } else if (questions.response_code == 1) {
               this.setState({
                 status: "error",
-                message:
-                  "This quiz is under development and does not have enough questions right now."
+                message: "This quiz is under development and does not have enough questions right now."
               });
             } else {
               this.setState({
@@ -233,35 +251,20 @@ class Quiz extends Component {
         </div>
       );
     } else if (this.props.categoriesStatus == "success") {
-      let findCategory = this.props.cats.find(
-        cat => cat.id == this.props.match.params.id
-      );
+      let findCategory = this.props.cats.find(cat => cat.id == this.props.match.params.id);
 
       if (typeof findCategory === "undefined") {
-        content = (
-          <div className="quiz-status">
-            The requested category does not exist.
-          </div>
-        );
+        content = <div className="quiz-status">The requested category does not exist.</div>;
       } else {
         if (this.state.started) {
           if (this.state.finished) {
-            content = (
-              <QuizBreakdown
-                score={this.state.score}
-                answers={this.state.answers}
-              />
-            );
+            content = <QuizBreakdown score={this.state.score} answers={this.state.answers} />;
           } else {
             content = (
               <QuestionsCard
                 questionNo={this.state.questionNo}
-                questionText={
-                  this.state.questions[this.state.questionNo].question
-                }
-                alternatives={
-                  this.state.questions[this.state.questionNo].alternatives
-                }
+                questionText={this.state.questions[this.state.questionNo].question}
+                alternatives={this.state.questions[this.state.questionNo].alternatives}
                 timeLeft={this.state.timeLeft}
                 answerClick={this.answer}
                 correctOrIncorrect={this.state.correctOrIncorrect}
@@ -282,9 +285,7 @@ class Quiz extends Component {
         }
       }
     } else {
-      content = (
-        <div className="quiz-status">{this.props.categoriesMessage}</div>
-      );
+      content = <div className="quiz-status">{this.props.categoriesMessage}</div>;
     }
     return <React.Fragment>{content}</React.Fragment>;
   }
@@ -292,24 +293,18 @@ class Quiz extends Component {
 
 function mapStateToProps(state) {
   return {
+    auth: state.firebaseReducer.auth,
+    profile: state.firebaseReducer.profile,
     cats: state.categoryReducer.categories,
     categoriesStatus: state.categoryReducer.status,
-    categoriesMessage: state.categoryReducer.message,
-    categoryPreferences: state.firebaseReducer.profile.categories
+    categoriesMessage: state.categoryReducer.message
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    get_categories: () => dispatch(get_categories()),
-    updateScore: score => dispatch(updateScore(score)),
-    updateCategoryPreferences: (categoryId, score, correct, answered) =>
-      dispatch(updateCategoryPreferences(categoryId, score, correct, answered)),
-    updateCategoryScore: (categoryId, score) =>
-      dispatch(updateCategoryScore(categoryId, score)),
-    updateHistory: (categoryId, difficulty, score, correct, answered) =>
-      dispatch(updateHistory(categoryId, difficulty, score, correct, answered))
+    get_categories: () => dispatch(get_categories())
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Quiz);
+export default withFirebase(connect(mapStateToProps, mapDispatchToProps)(Quiz));
