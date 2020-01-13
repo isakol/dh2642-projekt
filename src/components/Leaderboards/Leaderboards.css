@@ -25,3 +25,15 @@
   background-color:#fff1b8;
   font-weight:700;
 }
+
+.leaderboard-card-body {
+  min-height:275px;
+}
+
+.leaderboard-right {
+  padding-left:0;
+}
+
+.category-card {
+  margin-bottom: 20px;
+}
