@@ -6,22 +6,19 @@ import {connect} from "react-redux";
 import {get_categories} from "../../redux/actions/categories"
 
 class SelectDifficulty extends Component {
-  constructor(props) {
-    super(props);
-  }
 
   componentDidMount() {
-    if (this.props.cats.length == 0) {
+    if (this.props.cats.length === 0) {
       this.props.get_categories();
     }
   }
 
   render() {
     let content = "";
-    if (this.props.status == "loading") {
+    if (this.props.status === "loading") {
       content = <div className="difficulty-status"><Spin size="large" /></div>
     } else {
-      let findCategory = this.props.cats.find(cat => cat.id == this.props.match.params.id);
+      let findCategory = this.props.cats.find(cat => cat.id === parseInt(this.props.match.params.id));
 
       if (typeof findCategory === "undefined") {
         content = <div className="difficulty-status">The requested category does not exist.</div>

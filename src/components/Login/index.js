@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Form, Icon, Input, Button, Col, Card } from "antd";
+import { Form, Input, Button, Col, Card } from "antd";
 import { withFirebase } from "react-redux-firebase";
+import {withRouter} from "react-router-dom";
 import "./Login.css";
 
 const formItemLayout = {
@@ -33,6 +34,14 @@ class Login extends Component {
       loading: false,
       isSubmitting: false
     };
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.auth.isLoaded !== this.props.auth.isLoaded || prevProps.auth.isEmpty !== this.props.auth.isEmpty) {
+      if (!this.props.auth.isEmpty) {
+        this.props.history.push("/");
+      }
+    }
   }
 
   submitClick = (e, check) => {
@@ -235,8 +244,9 @@ class Login extends Component {
 
 function mapStateToProps(state) {
   return {
-    authError: state.firebaseReducer.authError
+    authError: state.firebaseReducer.authError,
+    auth: state.firebaseReducer.auth
   };
 }
 
-export default withFirebase(connect(mapStateToProps)(Login));
+export default withFirebase(withRouter(connect(mapStateToProps)(Login)));

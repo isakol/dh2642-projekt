@@ -8,7 +8,7 @@ import {get_categories} from "../../redux/actions/categories";
 class SelectCategory extends Component {
 
   componentDidMount() {
-    if (this.props.cats.length == 0) {
+    if (this.props.cats.length === 0) {
       this.props.get_categories();
     }
   }
@@ -18,8 +18,8 @@ class SelectCategory extends Component {
       <React.Fragment>
         <h1 className="category-title">Select a category</h1>
         {
-        this.props.status == "loading" ? <div className="category-status"><Spin size="large" /></div> :
-        this.props.status == "success" ?
+        this.props.status === "loading" ? <div className="category-status"><Spin size="large" /></div> :
+        this.props.status === "success" ?
         <Row gutter={20}>
           {
             this.props.cats.map((cat, i) => {
@@ -31,7 +31,7 @@ class SelectCategory extends Component {
             })
           }
         </Row>
-        : this.props.status == "error" ? <div className="category-status">{this.props.message}</div> : null
+        : this.props.status === "error" ? <div className="category-status">{this.props.message}</div> : null
       }
       </React.Fragment>
     );

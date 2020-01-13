@@ -1,16 +1,13 @@
-import React, { Component, useState} from "react";
+import React, { Component } from "react";
 import { connect } from "react-redux";
 import { get_categories } from "../../redux/actions/categories";
-import { Row, Col, Card, Progress, Skeleton, List } from "antd";
+import { Row, Col, Alert, Card, Progress, Skeleton, List } from "antd";
 import "./Home.css";
 
 class Home extends Component {
-  constructor(props) {
-    super(props);
-  }
 
   componentDidMount() {
-    if (this.props.cats.length == 0) {
+    if (this.props.cats.length === 0) {
       this.props.get_categories();
     }
   }
@@ -22,11 +19,11 @@ class Home extends Component {
     let recentActivity = [];
 
     if (typeof this.props.profile.categories !== "undefined") {
-      for (var k in this.props.profile.categories) {
+      for (let k in this.props.profile.categories) {
         totalAnswers += this.props.profile.categories[k].answered;
         totalCorrect += this.props.profile.categories[k].correct;
-        let findCategory = this.props.cats.find(cat => cat.id == k);
-        if (findCategory != undefined)
+        let findCategory = this.props.cats.find(cat => cat.id === parseInt(k));
+        if (findCategory !== undefined)
           favoriteCategories.push({
             name: findCategory.name,
             times: this.props.profile.categories[k].times
@@ -37,11 +34,11 @@ class Home extends Component {
       });
 
       if (typeof this.props.profile.history !== "undefined") {
-        for (var k in this.props.profile.history) {
+        for (let k in this.props.profile.history) {
           let findCategory = this.props.cats.find(
-            cat => cat.id == this.props.profile.history[k].id
+            cat => cat.id === parseInt(this.props.profile.history[k].id)
           );
-          if (findCategory != undefined) {
+          if (findCategory !== undefined) {
             recentActivity.push({
               name: findCategory.name,
               score: this.props.profile.history[k].score,
@@ -57,11 +54,12 @@ class Home extends Component {
 
     return (
       <React.Fragment>
-        <Card><div>Welcome home, {this.props.profile.displayName !== "undefined" && this.props.profile.displayName !== null ?(this.props.profile.displayName) : "user"}!</div></Card>
-        <Row gutter={30}>
-          <Col span={8}>
-            <Card title="Correct answers">
-              {this.props.categoryStatus == "success" &&
+        {this.props.categoryStatus === "error" && <Alert type="error" message="Could not contact the API, please try again later." />}
+        <Card className="home-name-header"><div>Welcome home, {this.props.profile.displayName !== "undefined" && this.props.profile.displayName !== null ?(this.props.profile.displayName) : "user"}!</div></Card>
+        <Row gutter={20}>
+          <Col xs={24} md={24} lg={8}>
+            <Card className="home-card" title="Correct answers">
+              {this.props.categoryStatus === "success" &&
               this.props.profile.isLoaded ? (
                 typeof this.props.profile.categories !== "undefined" ? (
                   <React.Fragment>
@@ -71,18 +69,16 @@ class Home extends Component {
                       strokeWidth={8}
                       percent={Math.round((+totalCorrect / totalAnswers) * 100)}
                     />
-                    <div>
-                      {totalCorrect}/{totalAnswers} (
-                      {Math.round((+totalCorrect / totalAnswers) * 100) + "%"})
-                      {((totalCorrect/totalAnswers) >= 0.75) ? (<div>
-                        Well done!</div>
-                        ) : ((totalCorrect/totalAnswers) >= 0.5) ?(<div>
-                          You are well on your way to good scores!</div>
-                        ) : ((totalCorrect/totalAnswers) >= 0.25) ?(<div>
-                          Perhaps you should pick easier difficulties before you feel more confident?</div>
-                        ) : (<div>
-                          Ouch! We don't know what we should recommend you. Going back to school perhaps?
-                          </div>)}
+                    <div className="total-numbers">
+                      {totalCorrect}/{totalAnswers} ({Math.round((+totalCorrect / totalAnswers) * 100) + "%"})
+                    </div>
+                    <div className="card-footer">
+                      {((totalCorrect/totalAnswers) >= 0.75) ? (
+                        "Well done!"
+                        ) : ((totalCorrect/totalAnswers) >= 0.5) ?(
+                          "You are well on your way to good scores!"
+                        ) : ((totalCorrect/totalAnswers) >= 0.25) ?("Perhaps you should pick easier difficulties before you feel more confident?"
+                      ) : ("Ouch! We don't know what we should recommend you. Going back to school perhaps?")}
                     </div>
                   </React.Fragment>
                 ) : (
@@ -93,11 +89,11 @@ class Home extends Component {
               )}
             </Card>
           </Col>
-          <Col span={8}>
-            <Card title="Your favorite categories">
-              {this.props.categoryStatus == "success" &&
+          <Col xs={24} md={12} lg={8}>
+            <Card className="home-card" title="Your favorite categories">
+              {this.props.categoryStatus === "success" &&
               this.props.profile.isLoaded ? (
-                typeof this.props.profile.categories != "undefined" ? (
+                typeof this.props.profile.categories !== "undefined" ? (
                   <React.Fragment>
                     {favoriteCategories.map((c, i) => {
                       return (
@@ -105,11 +101,11 @@ class Home extends Component {
                           <Col className="favorite-left" span={21}>
                             {c.name}
                           </Col>
-                          
+
                         </Row>
                       );
                     })}
-                    <div id="favoritePlease">Play your less frequent category picks for a score boost!</div>
+                    <div className="card-footer">Play your less frequently played category picks for a score boost!</div>
                   </React.Fragment>
                 ) : (
                   "You have not played any quiz yet"
@@ -119,16 +115,16 @@ class Home extends Component {
               )}
             </Card>
           </Col>
-          <Col span={8}>
-            <Card title="Recent activity">
-              {this.props.categoryStatus == "success" &&
+          <Col xs={24} md={12} lg={8}>
+            <Card className="home-card" title="Recent activity">
+              {this.props.categoryStatus === "success" &&
               this.props.profile.isLoaded ? (
-                typeof this.props.profile.history != "undefined" ? (
+                typeof this.props.profile.history !== "undefined" ? (
                   <List>
                     {[...recentActivity].reverse().map((c, i) => {
                       const activityDate = new Date(c.timestamp);
                       return (
-                        <List.Item>
+                        <List.Item key={i}>
                           <div className="activity-time">
                             <div>{activityDate.toLocaleDateString()}</div>
                             <div>

@@ -15,3 +15,29 @@
 .activity-score {
   color: #52c41a;
 }
+
+.home-name-header {
+  margin-bottom:20px;
+}
+
+.total-numbers {
+  font-weight:600;
+  margin-left:21px;
+}
+
+.card-footer {
+  margin-left: -24px;
+  margin-right: -24px;
+  border-top:1px solid #e8e8e8;
+  padding: 24px 24px 0 24px;
+  margin-top:24px;
+  font-style: italic;
+}
+
+.centered-body {
+  text-align:center;
+}
+
+.home-card {
+  margin-bottom:20px;
+}

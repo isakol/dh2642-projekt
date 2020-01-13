@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React from 'react';
 import './App.css';
 import { Layout} from 'antd'
-import { Link, BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { connect } from "react-redux";
 import Quiz from "./components/Quiz";
 import Login from "./components/Login";
@@ -18,7 +18,6 @@ import Landing from "./components/Landing";
 const { Content } = Layout;
 
 const App = (props) => {
-  let loggedIn = !props.auth.isEmpty;
   return (
         <Router>
           <Layout>
@@ -30,7 +29,7 @@ const App = (props) => {
                 <Route exact path="/new-quiz/:id" render={(props) => <RequireAuth><SelectDifficulty match={props.match} /></RequireAuth>} />
                 <Route exact path="/new-quiz"><RequireAuth><SelectCategory /></RequireAuth></Route>
                 <Route exact path="/quiz/:id/:difficulty(|easy|medium|hard)?" render={(props) => <RequireAuth><Quiz match={props.match}/></RequireAuth>} />
-                <Route path="/login" render={(props) => {return !loggedIn ? <Login /> : props.history.push("/")}} />
+                <Route path="/login"><Login /></Route>
                 <Route path="/settings"><RequireAuth><Settings /></RequireAuth></Route>
                 <Route exact={true}>Error 404. Page could not be found.</Route>
               </Switch>

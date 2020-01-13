@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import { Col, Row, Form, Upload, Button, Input, Icon, PageHeader, Alert} from 'antd';
+import { Form, Upload, Button, Input, Icon, PageHeader, Alert} from 'antd';
 import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
 import { withFirebase } from 'react-redux-firebase';
@@ -22,7 +22,7 @@ const Settings = (props) => {
     .limitToFirst(1)
     .once("value", snapshot => {
       if (!snapshot.exists()) {
-        if (displayName != props.auth.displayName) {
+        if (displayName !== props.auth.displayName) {
           props.firebase.updateAuth({displayName: displayName});
           props.firebase.updateProfile({displayName: displayName});
           setStatus("success")
@@ -44,8 +44,8 @@ const Settings = (props) => {
   return (
     <React.Fragment>
       {
-        msgDisplay == true ?
-          status == "success" ? <Alert className="settings-alert" message="We successfully updated your information" type="success" /> : status == "error" ? <Alert className="settings-alert" message={message} type="error" /> : null
+        msgDisplay === true ?
+          status === "success" ? <Alert className="settings-alert" message="We successfully updated your information" type="success" /> : status === "error" ? <Alert className="settings-alert" message={message} type="error" /> : null
         :
           null
       }
@@ -72,7 +72,7 @@ const Settings = (props) => {
           </Upload>
         </Form.Item>
         <Form.Item wrapperCol={{sm: {offset:6}, md: {offset:5}, lg: {offset:3}, xl: {offset:2}}}>
-          <Button type="primary" htmlType="submit" loading={props.status == "loading"}>
+          <Button type="primary" htmlType="submit" loading={props.status === "loading"}>
             Save changes
           </Button>
         </Form.Item>
