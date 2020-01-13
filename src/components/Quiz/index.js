@@ -141,7 +141,7 @@ class Quiz extends Component {
                       let lowestKey = Object.keys(snapshot.val()).sort((a,b) => snapshot.val()[b].points - snapshot.val()[a].points).slice(-1)[0];
                       if (points > snapshot.val()[lowestKey].points) {
                         console.log(lowestKey);
-                          this.props.firebase.update("leaderboards/"+lowestKey, {});
+                          this.props.firebase.set("leaderboards/"+lowestKey, {});
                           this.props.firebase.push("leaderboards/", {
                             id: parseInt(this.props.match.params.id),
                             displayName: this.props.profile.displayName,
