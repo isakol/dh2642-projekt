@@ -8,7 +8,7 @@ const Landing = () => {
   return (
     <React.Fragment>
       <section className="landing-header">
-        <h1>Welcome to QUIZ APP NAME HERE</h1>
+        <h1>Welcome to Entrivia</h1>
         <p>A web based application where you can test your knowledge.</p>
       </section>
       <section className="landing-section-1">

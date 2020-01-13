@@ -120,7 +120,7 @@ const Leaderboards = props => {
               return (
                 findCategory !== undefined && (
                   <Col key={i} xs={24} md={24} lg={12} xl={8}>
-                    <Card className="category-card" title={findCategory.name} extra={<Link to={"/new-quiz/" + c.id}>Take quiz</Link>}>
+                    <Card className="category-card" title={findCategory.name} extra={<Link to={"/new-quiz/" + c}>Take quiz</Link>}>
                       <div className="leaderboard-card-body">
                         {leaderboardObj[c]
                           .sort((a, b) => b.points - a.points)
