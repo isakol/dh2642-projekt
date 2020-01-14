@@ -83,13 +83,6 @@ const Settings = (props) => {
         <Form.Item label="Display name">
           <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
         </Form.Item>
-        <Form.Item label="Profile picture">
-          <Upload name="logo" action="uploadapiurl" listType="picture">
-            <Button>
-              <Icon type="upload" /> Click to upload
-            </Button>
-          </Upload>
-        </Form.Item>
         <Form.Item wrapperCol={{sm: {offset:6}, md: {offset:5}, lg: {offset:3}, xl: {offset:2}}}>
           <Button type="primary" htmlType="submit" loading={loading}>
             Save changes
@@ -102,7 +95,6 @@ const Settings = (props) => {
 }
 
 function mapStateToProps(state) {
-  console.log(state);
   return {
     auth: state.firebaseReducer.auth,
     profile: state.firebaseReducer.profile
