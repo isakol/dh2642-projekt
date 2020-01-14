@@ -19,7 +19,7 @@
 }
 
 @media screen and (max-width: 767px) {
-  .start-button, .leaderboard-button, .large-and-up {
+  .start-button-header, .leaderboard-button, .large-and-up {
     display:none;
   }
   .medium-and-down {

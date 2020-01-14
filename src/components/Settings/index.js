@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import { Form, Upload, Button, Input, Icon, PageHeader, Alert} from 'antd';
+import { Form, Button, Input, PageHeader, Alert} from 'antd';
 import {connect} from "react-redux";
 import {withRouter} from "react-router-dom";
 import { withFirebase } from 'react-redux-firebase';

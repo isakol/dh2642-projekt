@@ -16,7 +16,7 @@ const LayoutHeader = props => {
           <span className="logo">
             <Link to="/">Entrivia</Link>
           </span>
-          <span className="start-button">
+          <span className="start-button start-button-header">
             <Link to="/new-quiz">
               <Button type="primary" shape="round" size="large">
                 Start quiz
@@ -86,11 +86,10 @@ const LayoutHeader = props => {
                 <Menu.Divider />
                 {!props.auth.isLoaded ? (
                   ""
-                ) : !props.auth.isEmpty ? (
-                  <React.Fragment>
+                ) : !props.auth.isEmpty ? [
                     <Menu.Item key="3">
                       <Link to="/settings">Settings</Link>
-                    </Menu.Item>
+                    </Menu.Item>,
                     <Menu.Item
                       key="4"
                       onClick={() => {
@@ -101,8 +100,7 @@ const LayoutHeader = props => {
                     >
                       Sign out
                     </Menu.Item>
-                  </React.Fragment>
-                ) : (
+                ] : (
                   <Menu.Item key="3">
                     <Link to="/login">Login</Link>
                   </Menu.Item>
