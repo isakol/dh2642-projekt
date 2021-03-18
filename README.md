@@ -19,4 +19,4 @@ The app also calculates points based on a variety of factors such as difficulty 
 **/redux/constants.js** - constants for all redux actions.  
 
 ## Deployment
-The app is deployed to http://interaktionsprogrammering.herokuapp.com/
+The app is deployed to https://interaktionsprogrammering.herokuapp.com/
